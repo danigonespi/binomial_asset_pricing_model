@@ -34,7 +34,7 @@
 
    $$\varphi(x) = \max\{\ell(x);\ \ell \text{ linear},\ \ell(y) \le \varphi(y)\ \forall y \in \mathbb{R}\} \quad \text{(2.2.1)}$$
 
-   Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\#H(\omega)}q^{\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\#H/\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
+   Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\\#H(\omega)}q^{\\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\\#H/\\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
 
 4. **Assumptions and domain of validity**
 
@@ -61,6 +61,6 @@
 7. **Cross-references**
 
    * **Chapter 1 (Sections 1.1, 1.2):** the multiperiod stock price tree and parameters $u,d,r$ supply the primary random variables analyzed here.
-   * **Section 2.3:** the expectation $\mathbb{E}X$ is extended to conditional expectation $\mathbb{E}_n[X]$; this is also where the general $p^{\#H}q^{\#T}$ notation is actually introduced.
+   * **Section 2.3:** the expectation $\mathbb{E}X$ is extended to conditional expectation $\mathbb{E}_n[X]$; this is also where the general $p^{\\#H}q^{\\#T}$ notation is actually introduced.
    * **Theorem 2.3.2(v):** Jensen's inequality (2.2.5) is the conceptual template for the Conditional Jensen's inequality.
    * **Section 2.7 / Volume II, Chapters 1–2:** the finite-$\Omega$ framework is linked to Kolmogorov's axiomatization needed for continuous-time models.
