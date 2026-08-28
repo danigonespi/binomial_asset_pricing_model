@@ -17,14 +17,23 @@
 3. **Key equations**
 
    $$u = \frac{S_1(H)}{S_0}, \quad d = \frac{S_1(T)}{S_0} \quad \text{(1.1.1)}$$
+
    $$0 < d < 1 + r < u \quad \text{(1.1.2)}$$
+
    $$X_0 + \Delta_0 \left( \frac{S_1(H)}{1+r} - S_0 \right) = \frac{V_1(H)}{1+r} \quad \text{(1.1.3)}$$
+
    $$X_0 + \Delta_0 \left( \frac{S_1(T)}{1+r} - S_0 \right) = \frac{V_1(T)}{1+r} \quad \text{(1.1.4)}$$
+
    $$X_0 + \Delta_0 \left( \frac{1}{1+r} [\tilde{p}S_1(H) + \tilde{q}S_1(T)] - S_0 \right) = \frac{1}{1+r} [\tilde{p}V_1(H) + \tilde{q}V_1(T)] \quad \text{(1.1.5)}$$
+
    $$S_0 = \frac{1}{1+r} [\tilde{p}S_1(H) + \tilde{q}S_1(T)] \quad \text{(1.1.6)}$$
+
    $$X_0 = \frac{1}{1+r} [\tilde{p}V_1(H) + \tilde{q}V_1(T)] \quad \text{(1.1.7)}$$
+
    $$\tilde{p} = \frac{1+r-d}{u-d} \quad \tilde{q} = \frac{u-1-r}{u-d} \quad \text{(1.1.8)}$$
+
    $$\Delta_0 = \frac{V_1(H) - V_1(T)}{S_1(H) - S_1(T)} \quad \text{(1.1.9)}$$
+
    $$V_0 = \frac{1}{1+r} [\tilde{p}V_1(H) + \tilde{q}V_1(T)] \quad \text{(1.1.10)}$$
 
 4. **Assumptions and domain of validity**
