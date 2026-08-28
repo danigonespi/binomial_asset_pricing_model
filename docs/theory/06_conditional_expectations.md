@@ -32,6 +32,8 @@
 
    $$\tilde{\mathbb{E}}_N[X] = X \quad \text{(2.3.8)}$$
 
+   Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\\#H(\omega)}q^{\\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\\#H/\\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
+
 4. **Assumptions and domain of validity**
 
    * **Random Variables:** $X$ and $Y$ must be random variables depending on the first $N$ tosses of a coin.
