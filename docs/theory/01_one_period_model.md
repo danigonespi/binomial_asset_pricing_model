@@ -15,6 +15,7 @@ The one-period binomial model provides an introductory tool to understand arbitr
 * $V_0$: Arbitrage-free price of the derivative instrument at time zero.
 
 3. **Key equations**
+
 $$u = \frac{S_1(H)}{S_0}, \quad d = \frac{S_1(T)}{S_0} \quad \text{(1.1.1)}$$
 $$0 < d < 1 + r < u \quad \text{(1.1.2)}$$
 $$X_0 + \Delta_0 \left( \frac{S_1(H)}{1+r} - S_0 \right) = \frac{V_1(H)}{1+r} \quad \text{(1.1.3)}$$

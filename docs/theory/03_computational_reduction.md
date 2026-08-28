@@ -9,12 +9,17 @@ Section 1.3 addresses the computational impracticability of naively applying the
 
 3. **Key equations**
 The only equation with explicit numbering assigned by the author in this section is the adaptation of the risk-neutral formula evaluated at step 2:
+
 $$V_2(\omega_1\omega_2) = \frac{1}{1+r} [\tilde{p}V_3(\omega_1\omega_2H) + \tilde{q}V_3(\omega_1\omega_2T)] \quad \text{(1.3.1)}$$
+
 *Key computational equations (unnumbered in the original text, but presented as canonical algorithmic formulas in the section):*
 For an option dependent only on the current stock price (Example 1.3.1):
+
 $$v_n(s) = \frac{1}{1+r} [\tilde{p}v_{n+1}(us) + \tilde{q}v_{n+1}(ds)]$$
 $$\Delta_n(s) = \frac{v_{n+1}(us) - v_{n+1}(ds)}{(u-d)s}$$
+
 For a lookback option dependent on the maximum (Example 1.3.2):
+
 $$v_n(s, m) = \frac{1}{1+r} [\tilde{p}v_{n+1}(us, m \vee (us)) + \tilde{q}v_{n+1}(ds, m)]$$
 $$\Delta_n(s, m) = \frac{v_{n+1}(us, m \vee (us)) - v_{n+1}(ds, m)}{(u-d)s}$$
 

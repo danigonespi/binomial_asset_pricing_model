@@ -43,6 +43,7 @@ $$X_{n+1}(H) = \Delta_n u S_n + (1+r)(X_n - \Delta_n S_n) \quad \text{(1.2.20)}$
 
 5. **Theorems and proof outline**
 **Theorem 1.2.2 (Replication in the multiperiod binomial model):** In an $N$-period binomial model with $0 < d < 1+r < u$, and letting $V_N$ be a random variable depending on the first $N$ tosses. If we recursively define $V_n$ backward using equation (1.2.16) and the portfolio $\Delta_n$ using (1.2.17), and if we start with $X_0 = V_0$, then the wealth recursively defined forward via equation (1.2.14) will satisfy $X_N(\omega_1 \dots \omega_N) = V_N(\omega_1 \dots \omega_N)$ for every scenario.
+
 *Proof outline:*
 1. The proof is constructed by induction on $n$ moving forward in time.
 2. The base case is assumed from the hypothesis by setting $X_0 = V_0$.
