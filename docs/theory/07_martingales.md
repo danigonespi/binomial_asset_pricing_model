@@ -138,10 +138,9 @@ $$
    *Second Proof (Deeper Proof, using Theorem 2.3.2):*
    
    1. **Decompose the fraction:** Rewrite the target term inside the conditional expectation as:
-
-      $$
-      \frac{S_{n+1}}{(1+r)^{n+1}} = \frac{S_n}{(1+r)^n} \cdot \frac{1}{1+r} \cdot \frac{S_{n+1}}{S_n}
-      $$
+$$
+\frac{S_{n+1}}{(1+r)^{n+1}} = \frac{S_n}{(1+r)^n} \cdot \frac{1}{1+r} \cdot \frac{S_{n+1}}{S_n}
+$$
 
    2. **Pull out known terms:** Since $\frac{S_n}{(1+r)^n}$ depends only on the first $n$ coin tosses, pull it outside the conditional expectation $\tilde{\mathbb{E}}_n$ using the "taking out what is known" property.
    3. **Identify independent ratios:** This leaves the conditional expectation of $\frac{1}{1+r} \frac{S_{n+1}}{S_n}$. Note that the stock price ratio $\frac{S_{n+1}}{S_n}$ depends only on the $(n+1)$-st toss.
