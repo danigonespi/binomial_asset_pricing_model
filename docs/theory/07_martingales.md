@@ -6,33 +6,37 @@
 
    Below are the mathematical objects introduced in this section, using the exact notation of the book:
 
-   * **Adapted Stochastic Process:** A sequence of random variables $M_0, M_1, \dots, M_N$, where each $M_n$ depends only on the first $n$ coin tosses, and $M_0$ is a constant (Definition 2.4.1, p. 36).
+* **Adapted Stochastic Process:** A sequence of random variables $M_0, M_1, \dots, M_N$, where each $M_n$ depends only on the first $n$ coin tosses, and $M_0$ is a constant (Definition 2.4.1, p. 36).
    
-   * **Martingale:** An adapted stochastic process satisfying (Definition 2.4.1(i), p. 36):
+* **Martingale:** An adapted stochastic process satisfying (Definition 2.4.1(i), p. 36):
+  
 $$
 M_n = \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1
 $$
 
-   * **Submartingale:** An adapted stochastic process satisfying (Definition 2.4.1(ii), p. 36):
+* **Submartingale:** An adapted stochastic process satisfying (Definition 2.4.1(ii), p. 36):
+
 $$
 M_n \le \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1
 $$
 
-   * **Supermartingale:** An adapted stochastic process satisfying (Definition 2.4.1(iii), p. 37):
+* **Supermartingale:** An adapted stochastic process satisfying (Definition 2.4.1(iii), p. 37):
+
 $$
 M_n \ge \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1
 $$
 
-   * **Portfolio Process (Adapted):** A sequence $\Delta_0, \Delta_1, \dots, \Delta_{N-1}$ of random variables, where $\Delta_n$ represents the number of stock shares held from time $n$ to $n+1$ and depends only on the first $n$ coin tosses (Definition 2.4.1, p. 36).
+* **Portfolio Process (Adapted):** A sequence $\Delta_0, \Delta_1, \dots, \Delta_{N-1}$ of random variables, where $\Delta_n$ represents the number of stock shares held from time $n$ to $n+1$ and depends only on the first $n$ coin tosses (Definition 2.4.1, p. 36).
    
-   * **Wealth Process:** The sequence of random variables $X_0, X_1, \dots, X_N$ generated recursively from initial capital $X_0$ by (p. 40):
+* **Wealth Process:** The sequence of random variables $X_0, X_1, \dots, X_N$ generated recursively from initial capital $X_0$ by (p. 40):
+
 $$
 X_{n+1} = \Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)
 $$
 
-   * **Cash Flow Process:** A sequence of random variables $C_0, C_1, \dots, C_N$ such that each $C_n$ depends only on the first $n$ tosses $\omega_1\dots\omega_n$ (p. 42).
+* **Cash Flow Process:** A sequence of random variables $C_0, C_1, \dots, C_N$ such that each $C_n$ depends only on the first $n$ tosses $\omega_1\dots\omega_n$ (p. 42).
    
-   * **Value of Cash Flow Payments:** The price process $V_n$ representing the net present value at time $n$ of the future payments $C_n, \dots, C_N$ (p. 42).
+* **Value of Cash Flow Payments:** The price process $V_n$ representing the net present value at time $n$ of the future payments $C_n, \dots, C_N$ (p. 42).
 
 3. **Key equations**
 
