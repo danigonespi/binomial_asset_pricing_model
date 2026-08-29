@@ -34,10 +34,11 @@
 
 6. **Exercises in this section**
 
-   * **Exercise 1.8 (Asian option):** Based on the three-period model of Example 1.2.1 where $S_0=4$, $u=2$, $d=1/2$, $r=1/4$, and where the risk-neutral probabilities turn out to be $\tilde{p}=\tilde{q}=1/2$. It is defined that $Y_n = \sum_{k=0}^n S_k$. Consider an Asian call option that expires at $n=3$ with strike price $K=4$, whose final payoff is $\left(\frac{Y_3}{4} - 4\right)^+$. Defining $v_n(s, y)$ as the price of this option at time $n$ if $S_n = s$ and $Y_n = y$, the exercise exclusively asks to:
-     * (i) Develop an algorithm for computing $v_n$ recursively. In particular, write a formula for $v_n$ in terms of $v_{n+1}$.
-     * (ii) Apply the algorithm developed in (i) to compute $v_0(4, 4)$, which is the price of the Asian option at time zero.
-     * (iii) Provide a formula for $\Delta_n(s, y)$, the number of shares of the underlying stock that must be held in the replicating portfolio at time $n$ if $S_n = s$ and $Y_n = y$.
+   **Exercise 1.8 (Asian option):** Based on the three-period model of Example 1.2.1 where $S_0=4$, $u=2$, $d=1/2$, $r=1/4$, and where the risk-neutral probabilities turn out to be $\tilde{p}=\tilde{q}=1/2$. It is defined that $Y_n = \sum_{k=0}^n S_k$. Consider an Asian call option that expires at $n=3$ with strike price $K=4$, whose final payoff is $\left(\frac{Y_3}{4} - 4\right)^+$. Defining $v_n(s, y)$ as the price of this option at time $n$ if $S_n = s$ and $Y_n = y$, the exercise exclusively asks to:
+
+     * Develop an algorithm for computing $v_n$ recursively. In particular, write a formula for $v_n$ in terms of $v_{n+1}$.
+     * Apply the algorithm developed in (i) to compute $v_0(4, 4)$, which is the price of the Asian option at time zero.
+     * Provide a formula for $\Delta_n(s, y)$, the number of shares of the underlying stock that must be held in the replicating portfolio at time $n$ if $S_n = s$ and $Y_n = y$.
 
 7. **Cross-references**
 
