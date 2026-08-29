@@ -19,7 +19,7 @@ $$M_n \le \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1$$
 
 $$M_n \ge \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1$$
 
-* **Portfolio Process (Adapted):** A sequence $\Delta_0, \Delta_1, \dots, \Delta_{N-1}$ of random variables, where $\Delta_n$ represents the number of stock shares held from time $n$ to $n+1$ and depends only on the first $n$ coin tosses (Definition 2.4.1, p. 36).
+* **Portfolio Process (Adapted):** A sequence $\Delta_0, \Delta_1, \dots, \Delta_{N-1}$ of random variables, where $\Delta_n$ represents the number of stock shares held from time $n$ to $n+1$ and depends only on the first $n$ coin tosses (p. 40).
 * **Wealth Process:** The sequence of random variables $X_0, X_1, \dots, X_N$ generated recursively from initial capital $X_0$ by (p. 40):
 
 $$X_{n+1} = \Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)$$
@@ -136,9 +136,7 @@ Show that $S_0, S_1, S_2, \dots$ is a martingale. Note that even though the symm
 
 * **Exercise 2.8 (p. 56):** Consider an $N$-period binomial model.
 1. Let $M_0, M_1, \dots, M_N$ and $M'_0, M'_1, \dots, M'_N$ be martingales under the risk-neutral measure $\tilde{\mathbb{P}}$. Show that if $M_N = M'_N$ (for every possible outcome of the sequence of coin tosses), then $M_n = M'_n$ for every $n$ and every outcome.
-2. Let $V_N$ be the payoff at time $N$ of some derivative security. This is a random variable that can depend on all $N$ coin tosses. Define recursively $V'_{N-1}, V'_{N-2}, \dots, V'_0$ by the backward recursion formula (1.2.16):
-
-
+2. Let $V_N$ be the payoff at time $N$ of some derivative security. This is a random variable that can depend on all $N$ coin tosses. Define recursively $V'_{N-1}, V'_{N-2}, \dots, V'_0$ by the backward recursion formula (1.2.16). Show that
 
 $$V'_0, \frac{V'_1}{1+r}, \dots, \frac{V'_{N-1}}{(1+r)^{N-1}}, \frac{V_N}{(1+r)^N}$$
 
@@ -165,10 +163,7 @@ is a martingale.
 6. If $K = (1+r)^N S_0$, do we have $C_n = P_n$ for every $n$?
 
 
-* **Exercise 2.12 (p. 59):** Let $1 \le m \le N-1$ and $K > 0$ be given. A chooser option is a contract sold at time zero that confers on its owner the right to receive either a call or a put at time $m$, with a strike price of $K$. The owner can choose at time $m$ which one to receive.
-1. Show that the payoff at time $m$ of a chooser option is $\max(C_m, P_m)$.
-2. Using the risk-neutral pricing formula and the fact that the maximum of two martingales is a submartingale, explain why the chooser option price at time zero is at least as much as the call price at time zero.
-
+* **Exercise 2.12 (p. 59):** Let $1 \le m \le N-1$ and $K > 0$ be given. A chooser option is a contract sold at time zero that confers on its owner the right to receive either a call or a put at time $m$. The owner of the chooser may wait until time $m$ before choosing. The call or put chosen expires at time $N$ with strike price $K$. Show that the time-zero price of a chooser option is the sum of the time-zero price of a put, expiring at time $N$ and having strike price $K$, and a call, expiring at time $m$ and having strike price $\frac{K}{(1+r)^{N-m}}$. (Hint: Use put-call parity (Exercise 2.11).)
 
 
 ## 7. Cross-references

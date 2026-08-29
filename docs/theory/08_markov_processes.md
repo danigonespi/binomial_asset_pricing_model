@@ -99,7 +99,7 @@ $$\mathbb{E}_n [ f(X_1, \dots, X_K, Y_1, \dots, Y_L) ] = g(X_1, \dots, X_K) \qua
 1. **Fix historical path:** Let $\omega_1\dots\omega_n$ be a fixed, arbitrary sequence of the first $n$ tosses.
 2. **Apply Conditional Expectation definition:** Write $\mathbb{E}_n[f(X, Y)](\omega_1\dots\omega_n)$ as a sum over the future coin tosses $\omega_{n+1}\dots\omega_N$ using (2.3.6):
 
-$$ \mathbb{E}*n[f(X,Y)](\omega_1\dots\omega_n) = \sum*{\omega_{n+1}\dots\omega_N} f(X(\omega_1\dots\omega_n), Y(\omega_{n+1}\dots\omega_N)) p^{\\#H(\omega_{n+1}\dots\omega_N)} q^{\\#T(\omega_{n+1}\dots\omega_N)} $$
+$$ \mathbb{E}_n[f(X,Y)](\omega_1\dots\omega_n) = \sum_{\omega_{n+1}\dots\omega_N} f(X(\omega_1\dots\omega_n), Y(\omega_{n+1}\dots\omega_N)) p^{\\#H(\omega_{n+1}\dots\omega_N)} q^{\\#T(\omega_{n+1}\dots\omega_N)} $$
 
 3. **Treat known variables as constants:** On the right-hand side of the sum, replace the random variable $X(\omega_1\dots\omega_n)$ with the constant value $x$ because it is fully determined by the first $n$ tosses.
 4. **Rewrite as unconditional expectation:** Observe that the resulting sum matches exactly the definition of the unconditional expectation $\mathbb{E}[f(x, Y)]$:
