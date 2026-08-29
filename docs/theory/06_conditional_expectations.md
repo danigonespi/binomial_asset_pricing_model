@@ -16,21 +16,21 @@
 
 3. **Key equations**
 
-$$ \tilde{p} = \frac{1+r-d}{u-d}, \quad \tilde{q} = \frac{u-1-r}{u-d} \quad \text{(2.3.1)} $$
+   $$\tilde{p} = \frac{1+r-d}{u-d}, \quad \tilde{q} = \frac{u-1-r}{u-d} \quad \text{(2.3.1)}$$
 
-$$ \frac{\tilde{p}u+\tilde{q}d}{1+r} = 1 \quad \text{(2.3.2)} $$
+   $$\frac{\tilde{p}u+\tilde{q}d}{1+r} = 1 \quad \text{(2.3.2)}$$
 
-$$ S_n(\omega_1 \dots \omega_n) = \frac{1}{1+r} [ \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) ] \quad \text{(2.3.3)} $$
+   $$S_n(\omega_1 \dots \omega_n) = \frac{1}{1+r} [ \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) ] \quad \text{(2.3.3)}$$
 
-$$ \tilde{\mathbb{E}}_n[S_{n+1}](\omega_1 \dots \omega_n) = \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) \quad \text{(2.3.4)} $$
+   $$\tilde{\mathbb{E}}_n[S_{n+1}](\omega_1 \dots \omega_n) = \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) \quad \text{(2.3.4)}$$
 
-$$ S_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n[S_{n+1}] \quad \text{(2.3.5)} $$
+   $$S_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n[S_{n+1}] \quad \text{(2.3.5)}$$
 
-$$ \mathbb{E}_n[X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\\#H(\omega_{n+1} \dots \omega_N)} q^{\\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)} $$
+   $$\mathbb{E}_n[X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\\#H(\omega_{n+1} \dots \omega_N)} q^{\\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}$$
 
-$$ \tilde{\mathbb{E}}_0[X] = \tilde{\mathbb{E}}X \quad \text{(2.3.7)} $$
+   $$\tilde{\mathbb{E}}_0[X] = \tilde{\mathbb{E}}X \quad \text{(2.3.7)}$$
 
-$$ \tilde{\mathbb{E}}_N[X] = X \quad \text{(2.3.8)} $$
+   $$\tilde{\mathbb{E}}_N[X] = X \quad \text{(2.3.8)}$$
 
 4. **Assumptions and domain of validity**
 
@@ -43,11 +43,11 @@ $$ \tilde{\mathbb{E}}_N[X] = X \quad \text{(2.3.8)} $$
 
    **Theorem 2.3.2 (Fundamental properties of conditional expectations):** Let $N$ be a positive integer, and let $X$ and $Y$ be random variables depending on the first $N$ coin tosses. Let $0 \le n \le N$ be given. The following properties hold under both the actual probabilities ($\mathbb{E}_n$) and risk-neutral probabilities ($\tilde{\mathbb{E}}_n$):
 
-   1. **(i) Linearity of conditional expectations:** For all constants $c_1$ and $c_2$, $\mathbb{E}_n[c_1 X + c_2 Y] = c_1 \mathbb{E}_n[X] + c_2 \mathbb{E}_n[Y]$.
-   2. **(ii) Taking out what is known:** If $X$ actually depends only on the first $n$ coin tosses, then $\mathbb{E}_n[XY] = X \cdot \mathbb{E}_n[Y]$.
-   3. **(iii) Iterated conditioning:** If $0 \le n \le m \le N$, then $\mathbb{E}_n[\mathbb{E}_m[X]] = \mathbb{E}_n[X]$. In particular, $\mathbb{E}[\mathbb{E}_m[X]] = \mathbb{E}[X]$.
-   4. **(iv) Independence:** If $X$ depends only on tosses $n+1$ through $N$, then $\mathbb{E}_n[X] = \mathbb{E}X$.
-   5. **(v) Conditional Jensen's inequality:** If $\varphi(x)$ is a convex function of the dummy variable $x$, then $\mathbb{E}_n[\varphi(X)] \ge \varphi(\mathbb{E}_n[X])$.
+   1. **Linearity of conditional expectations:** For all constants $c_1$ and $c_2$, $\mathbb{E}_n[c_1 X + c_2 Y] = c_1 \mathbb{E}_n[X] + c_2 \mathbb{E}_n[Y]$.
+   2. **Taking out what is known:** If $X$ actually depends only on the first $n$ coin tosses, then $\mathbb{E}_n[XY] = X \cdot \mathbb{E}_n[Y]$.
+   3. **Iterated conditioning:** If $0 \le n \le m \le N$, then $\mathbb{E}_n[\mathbb{E}_m[X]] = \mathbb{E}_n[X]$. In particular, $\mathbb{E}[\mathbb{E}_m[X]] = \mathbb{E}[X]$.
+   4. **Independence:** If $X$ depends only on tosses $n+1$ through $N$, then $\mathbb{E}_n[X] = \mathbb{E}X$.
+   5. **Conditional Jensen's inequality:** If $\varphi(x)$ is a convex function of the dummy variable $x$, then $\mathbb{E}_n[\varphi(X)] \ge \varphi(\mathbb{E}_n[X])$.
 
    *Proof outline (Deferring formal calculations to the Appendix, as stated in the book):*
    1. **Proof of (i) Linearity:** Expressing $\mathbb{E}_n[c_1 X + c_2 Y]$ as a summation over the remaining coin tosses $\omega_{n+1} \dots \omega_N$ under Definition 2.3.1 allows the summation to be split into two parts due to algebraic linearity of sums. The constants $c_1$ and $c_2$ factor outside their respective sums (Illustrated in Example 2.3.3).
