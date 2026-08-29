@@ -22,30 +22,30 @@
 
    $$S_n(\omega_1 \dots \omega_n) = \frac{1}{1+r} [ \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) ] \quad \text{(2.3.3)}$$
 
-   $$
-   \tilde{\mathbb{E}}_n[S_{n+1}]{}(\omega_1 \dots \omega_n) = \tilde{p} S_{n+1}(\omega_1    \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) \quad \text{(2.3.4)}
-   $$
+   ```math
+   \tilde{\mathbb{E}}_n[S_{n+1}](\omega_1 \dots \omega_n) = \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) \quad \text{(2.3.4)}
+   ```
 
-   $$
+   ```math
    S_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n[S_{n+1}] \quad \text{(2.3.5)}
-   $$
+   ```
 
-   $$
+   ```math
    \mathbb{E}_n[X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\\#H(\omega_{n+1} \dots \omega_N)} q^{\\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}
-   $$
+   ```
 
    $$\tilde{\mathbb{E}}_0[X] = \tilde{\mathbb{E}}X \quad \text{(2.3.7)}$$
 
    $$\tilde{\mathbb{E}}_N[X] = X \quad \text{(2.3.8)}$$
 
-5. **Assumptions and domain of validity**
+4. **Assumptions and domain of validity**
 
    * **Random Variables:** $X$ and $Y$ must be random variables depending on the first $N$ tosses of a coin.
    * **Time Horizon:** The conditional expectation index $n$ must lie in the range $0 \le n \le N$.
    * **Probability Measure Constraints:** The actual probabilities $p, q$ (or risk-neutral probabilities $\tilde{p}, \tilde{q}$) must satisfy $0 < p < 1$, $0 < q < 1$, and $p+q=1$ (or $\tilde{p}+\tilde{q}=1$). If a transition probability is zero or outside this range, the expectation no longer represents a valid probability-weighted average.
    * **Conditional Jensen's Inequality (Theorem 2.3.2 (v)):** The function $\varphi(x)$ must be a **convex** function defined over the domain of $X$. If $\varphi(x)$ is concave, the inequality reverses strictly to $\mathbb{E}_n[\varphi(X)] \le \varphi(\mathbb{E}_n[X])$.
 
-6. **Theorems and proof outline**
+5. **Theorems and proof outline**
 
    **Theorem 2.3.2 (Fundamental properties of conditional expectations):** Let $N$ be a positive integer, and let $X$ and $Y$ be random variables depending on the first $N$ coin tosses. Let $0 \le n \le N$ be given. The following properties hold under both the actual probabilities ($\mathbb{E}_n$) and risk-neutral probabilities ($\tilde{\mathbb{E}}_n$):
 
@@ -62,7 +62,7 @@
    4. **Proof of (iv) Independence:** Since $X$ only depends on tosses $n+1$ through $N$, the sequence values do not depend on the first $n$ tosses. The summation over $\omega_{n+1} \dots \omega_N$ with joint transition probabilities is mathematically identical to the unconditional expectation sum $\mathbb{E}X$ (Illustrated in Example 2.3.6).
    5. **Proof of (v) Conditional Jensen's inequality:** Characterize the convex function $\varphi$ as the upper envelope of all linear support lines $\ell(y) = ay+b$ below it. For any such line, $\mathbb{E}_n[\varphi(X)] \ge \mathbb{E}_n[\ell(X)] = \ell(\mathbb{E}_n[X])$ by linearity. Taking the supremum over all such support lines at $y = \mathbb{E}_n[X]$ yields $\varphi(\mathbb{E}_n[X])$.
 
-7. **Exercises in this section**
+6. **Exercises in this section**
 
    **There are no exercises in Section 2.8 of the book that are specific and exclusive to Section 2.3.**
 
@@ -72,7 +72,7 @@
    * Proving discrete-time stochastic integrals in **Exercise 2.6**.
    * Proving put-call parity relations in **Exercise 2.11**.
 
-8. **Cross-references**
+7. **Cross-references**
 
    * **Chapter 1 (Sections 1.1, 1.2):** The multiperiod stock price tree and parameters $u,d,r$ supply the primary random variables analyzed here.
    * **Section 2.1 & 2.2:** Introduces finite probability spaces and defines the unconditional expectation operator $\mathbb{E}X$.
