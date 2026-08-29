@@ -6,18 +6,14 @@
 
    Below are the mathematical objects introduced in this section, using the exact notation of the book:
    * **One-Dimensional Markov Process (Definition 2.5.1, p. 45):** Let $X_0, X_1, \dots, X_N$ be an adapted process on a binomial asset-pricing model. If, for every $n$ between $0$ and $N-1$ and for every function $f(x)$, there is another function $g(x)$ (depending on $n$ and $f$) such that:
-
 $$ \mathbb{E}_n[f(X_{n+1})] = g(X_n) $$
 
    we say that $X_0, X_1, \dots, X_N$ is a Markov process.
    * **Running Maximum Process (Example 2.5.4, p. 48):** The adapted process $M_0, M_1, \dots, M_N$ representing the maximum stock price achieved up to date $n$, defined as:
-
 $$ M_n = \max_{0 \le k \le n} S_k $$
 
    * **$K$-Dimensional Markov Process (Definition 2.5.5, p. 49):** Let $\{(X_n^1, \dots, X_n^K); n = 0, 1, \dots, N\}$ be a $K$-dimensional adapted process (i.e., $K$ one-dimensional adapted processes). If, for every $n$ between $0$ and $N-1$ and for every function $f(x_1, \dots, x_K)$, there is another function $g(x_1, \dots, x_K)$ (depending on $n$ and $f$) such that:
-
 $$ \mathbb{E}_n[f(X_{n+1}^1, \dots, X_{n+1}^K)] = g(X_n^1, \dots, X_n^K) $$
-
    we say that $\{(X_n^1, \dots, X_n^K); n = 0, 1, \dots, N\}$ is a $K$-dimensional Markov process.
    * **State-Variable Pricing Functions (Theorem 2.5.8, p. 52):** Deterministic functions $v_n(x)$ such that $V_n = v_n(X_n)$, where $X_n$ is the underlying Markov process and $V_n$ is the option price at time $n$.
 
@@ -70,22 +66,17 @@ $$ V_n = v_n(X_n), \quad n = 0, 1, \dots, N \quad \text{(2.5.10)} $$
 5. **Theorems and proof outline**
 
    **Lemma 2.5.3 (Independence Lemma):** In the $N$-period binomial asset pricing model, let $n$ be an integer between $0$ and $N$. Suppose the random variables $X_1, \dots, X_K$ depend only on coin tosses $1$ through $n$ and the random variables $Y_1, \dots, Y_L$ depend only on coin tosses $n+1$ through $N$. Let $f(x_1, \dots, x_K, y_1, \dots, y_L)$ be a function of dummy variables, and define:
-
 $$ g(x_1, \dots, x_K) = \mathbb{E} f(x_1, \dots, x_K, Y_1, \dots, Y_L) \quad \text{(2.5.3)} $$
-
    Then
-
 $$ \mathbb{E}_n [ f(X_1, \dots, X_K, Y_1, \dots, Y_L) ] = g(X_1, \dots, X_K) \quad \text{(2.5.4)} $$
 
    *Proof Outline (for the simplified case $K=L=1$):*
    1. **Fix historical path:** Let $\omega_1\dots\omega_n$ be a fixed, arbitrary sequence of the first $n$ tosses.
    2. **Apply Conditional Expectation definition:** Write $\mathbb{E}_n[f(X, Y)](\omega_1\dots\omega_n)$ as a sum over the future coin tosses $\omega_{n+1}\dots\omega_N$ using (2.3.6):
-
 $$ \mathbb{E}_n[f(X,Y)](\omega_1\dots\omega_n) = \sum_{\omega_{n+1}\dots\omega_N} f(X(\omega_1\dots\omega_n), Y(\omega_{n+1}\dots\omega_N)) p^{\\#H(\omega_{n+1}\dots\omega_N)} q^{\\#T(\omega_{n+1}\dots\omega_N)} $$
 
    3. **Treat known variables as constants:** On the right-hand side of the sum, replace the random variable $X(\omega_1\dots\omega_n)$ with the constant value $x$ because it is fully determined by the first $n$ tosses.
    4. **Rewrite as unconditional expectation:** Observe that the resulting sum matches exactly the definition of the unconditional expectation $\mathbb{E}[f(x, Y)]$:
-
 $$ g(x) = \mathbb{E}[f(x, Y)] = \sum_{\omega_{n+1}\dots\omega_N} f(x, Y(\omega_{n+1}\dots\omega_N)) p^{\\#H(\omega_{n+1}\dots\omega_N)} q^{\\#T(\omega_{n+1}\dots\omega_N)} $$
 
    5. **Reintroduce the random variable:** Substitute the dummy variable $x$ back with $X(\omega_1\dots\omega_n)$ to conclude that $\mathbb{E}_n[f(X, Y)](\omega_1\dots\omega_n) = g(X(\omega_1\dots\omega_n))$ $\blacksquare$.
@@ -95,11 +86,9 @@ $$ g(x) = \mathbb{E}[f(x, Y)] = \sum_{\omega_{n+1}\dots\omega_N} f(x, Y(\omega_{
    *Proof Outline:*
    1. **Terminal condition:** At the maturity date $n = N$, the price of the option is by definition the payoff $V_N = V_N(X_N)$. Thus, we set $v_N(x) = V_N(x)$, which verifies the base case of backward induction.
    2. **Risk-neutral pricing relation:** Assume by induction that the pricing function holds for $n+1$, i.e., $V_{n+1} = v_{n+1}(X_{n+1})$. Write the one-step-ahead risk-neutral pricing formula (2.4.12):
-
 $$ V_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n [ V_{n+1} ] = \frac{1}{1+r} \tilde{\mathbb{E}}_n [ v_{n+1}(X_{n+1}) ] $$
 
    3. **Apply Markov definition:** Because $X_n$ is a Markov process under $\tilde{\mathbb{P}}$, Definition 2.5.1 guarantees that there exists a deterministic function $g(x)$ such that:
-
 $$ \tilde{\mathbb{E}}_n [ v_{n+1}(X_{n+1}) ] = g(X_n) $$
 
    4. **Define recursive function:** Set the function $v_n(x)$ as $v_n(x) = \frac{1}{1+r} g(x)$. This function depends only on the known parameters of the model, $r$, $v_{n+1}$, and the transition probabilities.
@@ -109,30 +98,20 @@ $$ \tilde{\mathbb{E}}_n [ v_{n+1}(X_{n+1}) ] = g(X_n) $$
 
    * **Exercise 2.7 (p. 56):** In a binomial model, give an example of a stochastic process that is a martingale but is not Markov.
    * **Exercise 2.13 (p. 59) (Asian option):** Consider an $N$-period binomial model. An Asian option has a payoff based on the average stock price, i.e.,
-
 $$ V_N = f\left(\frac{1}{N+1} \sum_{k=0}^N S_k\right) $$
-
    where the function $f$ is determined by the contractual details of the option.
-   * **(i)** Define $Y_n = \sum_{k=0}^n S_k$ and use the Independence Lemma 2.5.3 to show that the two-dimensional process $(S_n, Y_n), n = 0, 1, \dots, N$ is Markov.
-   * **(ii)** According to Theorem 2.5.8, the price $V_n$ of the Asian option at time $n$ is some function $v_n$ of $S_n$ and $Y_n$; i.e.,
-
+     * **(i)** Define $Y_n = \sum_{k=0}^n S_k$ and use the Independence Lemma 2.5.3 to show that the two-dimensional process $(S_n, Y_n), n = 0, 1, \dots, N$ is Markov.
+     * **(ii)** According to Theorem 2.5.8, the price $V_n$ of the Asian option at time $n$ is some function $v_n$ of $S_n$ and $Y_n$; i.e.,
 $$ V_n = v_n\left(S_n, \sum_{k=0}^n S_k\right), \quad n = 0, 1, \dots, N. $$
-
    Give a formula for $v_N(s, y)$, and provide an algorithm for computing $v_n(s, y)$ in terms of $v_{n+1}$.
    * **Exercise 2.14 (p. 60) (Asian option continued):** Consider an $N$-period binomial model, and let $M$ be a fixed number between $0$ and $N-1$. Consider an Asian option whose payoff at time $N$ is
-
 $$ V_N = f\left(\frac{1}{N-M} \sum_{k=M+1}^N S_k\right) $$
-
    where again the function $f$ is determined by the contractual details of the option.
-   * **(i)** Define
-
+     * **(i)** Define
 $$ Y_n = \begin{cases} 0 & \text{if } 0 \le n \le M \\ \sum_{k=M+1}^n S_k & \text{if } M+1 \le n \le N \end{cases} $$
-
    Show that the two-dimensional process $(S_n, Y_n), n = 0, 1, \dots, N$ is Markov (under the risk-neutral measure $\tilde{\mathbb{P}}$).
-   * **(ii)** According to Theorem 2.5.8, the price $V_n$ of the Asian option at time $n$ is some function $v_n$ of $S_n$ and $Y_n$, i.e., $V_n = v_n(S_n, Y_n)$ for $n = 0, 1, \dots, N$. Of course, when $n \le M$, $Y_n$ is not random and does not need to be included in this function. Thus, for such $n$ we should seek a function $v_n$ of $S_n$ alone and have
-
+     * **(ii)** According to Theorem 2.5.8, the price $V_n$ of the Asian option at time $n$ is some function $v_n$ of $S_n$ and $Y_n$, i.e., $V_n = v_n(S_n, Y_n)$ for $n = 0, 1, \dots, N$. Of course, when $n \le M$, $Y_n$ is not random and does not need to be included in this function. Thus, for such $n$ we should seek a function $v_n$ of $S_n$ alone and have
 $$ V_n = \begin{cases} v_n(S_n) & \text{if } 0 \le n \le M \\ v_n(S_n, Y_n) & \text{if } M+1 \le n \le N \end{cases} $$
-
    Give a formula for $v_N(s, y)$, and provide an algorithm for computing $v_n$ in terms of $v_{n+1}$. Note that the algorithm is different for $n < M$ and $n > M$, and there is a separate transition formula for $v_M(s)$ in terms of $v_{M+1}(\cdot, \cdot)$.
 
 7. **Cross-references**

@@ -7,20 +7,16 @@
    Below are the mathematical objects introduced in this section, using the exact notation of the book:
    * **Adapted Stochastic Process:** A sequence of random variables $M_0, M_1, \dots, M_N$, where each $M_n$ depends only on the first $n$ coin tosses, and $M_0$ is a constant (Definition 2.4.1, p. 36).
    * **Martingale:** An adapted stochastic process satisfying (Definition 2.4.1(i), p. 36):
-
 $$ M_n = \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1 $$
 
    * **Submartingale:** An adapted stochastic process satisfying (Definition 2.4.1(ii), p. 36):
-
 $$ M_n \le \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1 $$
 
    * **Supermartingale:** An adapted stochastic process satisfying (Definition 2.4.1(iii), p. 37):
-
 $$ M_n \ge \mathbb{E}_n[M_{n+1}], \quad n = 0, 1, \dots, N-1 $$
 
    * **Portfolio Process (Adapted):** A sequence $\Delta_0, \Delta_1, \dots, \Delta_{N-1}$ of random variables, where $\Delta_n$ represents the number of stock shares held from time $n$ to $n+1$ and depends only on the first $n$ coin tosses (p. 40).
    * **Wealth Process:** The sequence of random variables $X_0, X_1, \dots, X_N$ generated recursively from initial capital $X_0$ by (p. 40):
-
 $$ X_{n+1} = \Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n) $$
 
    * **Cash Flow Process:** A sequence of random variables $C_0, C_1, \dots, C_N$ such that each $C_n$ depends only on the first $n$ tosses $\omega_1\dots\omega_n$ (p. 42).
@@ -86,7 +82,6 @@ $$ V_N = C_N \quad \text{(2.4.19)} $$
 
    *Second Proof (Deeper Proof, using Theorem 2.3.2):*
    1. **Decompose the fraction:** Rewrite the target term inside the conditional expectation as:
-
 $$ \frac{S_{n+1}}{(1+r)^{n+1}} = \frac{S_n}{(1+r)^n} \cdot \frac{1}{1+r} \cdot \frac{S_{n+1}}{S_n} $$
 
    2. **Pull out known terms:** Since $\frac{S_n}{(1+r)^n}$ depends only on the first $n$ coin tosses, pull it outside the conditional expectation $\tilde{\mathbb{E}}_n$ using the "taking out what is known" property (Theorem 2.3.2(ii)).
@@ -99,14 +94,12 @@ $$ \frac{S_{n+1}}{(1+r)^{n+1}} = \frac{S_n}{(1+r)^n} \cdot \frac{1}{1+r} \cdot \
 
    *Proof Outline:*
    1. **Substitute wealth recursion:** Write the conditional expectation of the discounted wealth at $n+1$:
-
 $$ \tilde{\mathbb{E}}_n \left[ \frac{X_{n+1}}{(1+r)^{n+1}} \right] = \tilde{\mathbb{E}}_n \left[ \frac{\Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)}{(1+r)^{n+1}} \right] $$
 
    2. **Linearity expansion:** Use the linearity of conditional expectations (Theorem 2.3.2(i)) to split the expectation into stock-related and cash-related fractions.
    3. **Factor out known variables:** Since $\Delta_n$, $X_n$, and $S_n$ are known at time $n$, apply "taking out what is known" (Theorem 2.3.2(ii)) to factor them outside of $\tilde{\mathbb{E}}_n$.
    4. **Incorporate stock martingale property:** Use the martingale property of the discounted stock price (Theorem 2.4.4) to replace $\tilde{\mathbb{E}}_n\left[ \frac{S_{n+1}}{(1+r)^{n+1}} \right]$ with $\frac{S_n}{(1+r)^n}$.
    5. **Simplify algebraically:** This reduces the right-hand side of the wealth equation to:
-
 $$ \Delta_n \frac{S_n}{(1+r)^n} + \frac{X_n - \Delta_n S_n}{(1+r)^n} = \frac{X_n}{(1+r)^n} $$
 
       This proves the martingale relation (2.4.7).
@@ -116,16 +109,13 @@ $$ \Delta_n \frac{S_n}{(1+r)^n} + \frac{X_n - \Delta_n S_n}{(1+r)^n} = \frac{X_n
    *Proof Outline:*
    1. **Replication boundary condition:** Let $X_n$ be the wealth process of a replicating portfolio that satisfies $X_N = V_N$.
    2. **Stochastic martingale pricing:** Because $\frac{X_n}{(1+r)^n}$ is a risk-neutral martingale (Theorem 2.4.5), apply the multi-step-ahead martingale property (Remark 2.4.2) to write:
-
 $$ \frac{X_n}{(1+r)^n} = \tilde{\mathbb{E}}_n \left[ \frac{X_N}{(1+r)^N} \right] $$
 
    3. **Evaluate at boundary:** Replace $X_N$ with the target payoff $V_N$ inside the expectation:
-
 $$ \frac{X_n}{(1+r)^n} = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^N} \right] $$
 
    4. **Define option price:** Apply the no-arbitrage principle (Definition 1.2.3) to set the option price $V_n = X_n$, which yields (2.4.10).
    5. **Isolate $V_n$:** Multiply both sides by $(1+r)^n$ to isolate $V_n$ and obtain the risk-neutral pricing formula:
-
 $$ V_n = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^{N-n}} \right] $$
 
    6. **Verify martingale property:** Re-apply the martingale definition to the resulting discounted price process $\frac{V_n}{(1+r)^n}$ to verify (2.4.12).
@@ -136,40 +126,32 @@ $$ V_n = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^{N-n}} \right] $$
 
    * **Exercise 2.3 (p. 55):** Show that a convex function of a martingale is a submartingale. In other words, let $M_0, M_1, \dots, M_N$ be a martingale and let $\varphi$ be a convex function. Show that $\varphi(M_0), \varphi(M_1), \dots, \varphi(M_N)$ is a submartingale.
    * **Exercise 2.4 (p. 55):** Toss a coin repeatedly. Assume the probability of head on each toss is $1/2$, as is the probability of tail. Let $X_j = 1$ if the $j$th toss results in a head and $X_j = -1$ if the $j$th toss results in a tail. Consider the stochastic process $M_0, M_1, M_2, \dots$ defined by $M_0 = 0$ and
-
 $$ M_n = \sum_{j=1}^n X_j, \quad n \ge 1. $$
-
    This is called a symmetric random walk; with each head, it steps up one, and with each tail, it steps down one.
-   * (i) Using the properties of Theorem 2.3.2, show that $M_0, M_1, M_2, \dots$ is a martingale.
-   * (ii) Let $\sigma$ be a positive constant and, for $n \ge 0$, define
-
+     * (i) Using the properties of Theorem 2.3.2, show that $M_0, M_1, M_2, \dots$ is a martingale.
+     * (ii) Let $\sigma$ be a positive constant and, for $n \ge 0$, define
 $$ S_n = e^{\sigma M_n} \left( \frac{2}{e^\sigma + e^{-\sigma}} \right)^n. $$
 
-   Show that $S_0, S_1, S_2, \dots$ is a martingale. Note that even though the symmetric random walk $M_n$ has no tendency to grow, the "geometric symmetric random walk" $e^{\sigma M_n}$ does have a tendency to grow. This is the result of putting a martingale into the (convex) exponential function (see Exercise 2.3). In order to again have a martingale, we must "discount" the geometric symmetric random walk, using the term $\frac{2}{e^{\sigma} + e^{-\sigma}}$ as the discount rate. This term is strictly less than one unless $\sigma = 0$.
+     Show that $S_0, S_1, S_2, \dots$ is a martingale. Note that even though the symmetric random walk $M_n$ has no tendency to grow, the "geometric symmetric random walk" $e^{\sigma M_n}$ does have a tendency to grow. This is the result of putting a martingale into the (convex) exponential function (see Exercise 2.3). In order to again have a martingale, we must "discount" the geometric symmetric random walk, using the term $\frac{2}{e^{\sigma} + e^{-\sigma}}$ as the discount rate. This term is strictly less than one unless $\sigma = 0$.
    * **Exercise 2.8 (p. 56):** Consider an $N$-period binomial model.
-   * (i) Let $M_0, M_1, \dots, M_N$ and $M'_0, M'_1, \dots, M'_N$ be martingales under the risk-neutral measure $\tilde{\mathbb{P}}$. Show that if $M_N = M'_N$ (for every possible outcome of the sequence of coin tosses), then, for each $n$ between $0$ and $N$, we have $M_n = M'_n$ (for every possible outcome of the sequence of coin tosses).
-   * (ii) Let $V_N$ be the payoff at time $N$ of some derivative security. This is a random variable that can depend on all $N$ coin tosses. Define recursively $V'_{N-1}, V'_{N-2}, \dots, V'_0$ by the algorithm (1.2.16) of Chapter 1. Show that
-
+     
+     * (i) Let $M_0, M_1, \dots, M_N$ and $M'_0, M'_1, \dots, M'_N$ be martingales under the risk-neutral measure $\tilde{\mathbb{P}}$. Show that if $M_N = M'_N$ (for every possible outcome of the sequence of coin tosses), then, for each $n$ between $0$ and $N$, we have $M_n = M'_n$ (for every possible outcome of the sequence of coin tosses).
+     * (ii) Let $V_N$ be the payoff at time $N$ of some derivative security. This is a random variable that can depend on all $N$ coin tosses. Define recursively $V'_{N-1}, V'_{N-2}, \dots, V'_0$ by the algorithm (1.2.16) of Chapter 1. Show that
 $$ V'_0, \frac{V'_1}{1+r}, \dots, \frac{V'_{N-1}}{(1+r)^{N-1}}, \frac{V_N}{(1+r)^N} $$
-
-   is a martingale under $\tilde{\mathbb{P}}$.
-   * (iii) Using the risk-neutral pricing formula (2.4.11) of this chapter, define
-
+is a martingale under $\tilde{\mathbb{P}}$.
+     * (iii) Using the risk-neutral pricing formula (2.4.11) of this chapter, define
 $$ V_n = \mathbb{E}_n \left[ \frac{V_N}{(1+r)^{N-n}} \right], \quad n = 0, 1, \dots, N-1. $$
-
    Show that
-
 $$ V_0, \frac{V_1}{1+r}, \dots, \frac{V_{N-1}}{(1+r)^{N-1}}, \frac{V_N}{(1+r)^N} $$
-
    is a martingale.
-   * (iv) Conclude that $V_n = V'_n$ for every $n$ (i.e., the algorithm (1.2.16) of Theorem 1.2.2 of Chapter 1 gives the same derivative security prices as the risk-neutral pricing formula (2.4.11) of Chapter 2).
+     * (iv) Conclude that $V_n = V'_n$ for every $n$ (i.e., the algorithm (1.2.16) of Theorem 1.2.2 of Chapter 1 gives the same derivative security prices as the risk-neutral pricing formula (2.4.11) of Chapter 2).
    * **Exercise 2.11 (p. 58):** Consider a stock that pays no dividend in an $N$-period binomial model. A European call has payoff $C_N = (S_N - K)^+$ at time $N$, priced via the risk-neutral pricing formula (2.4.11). A put has payoff $P_N = (K - S_N)^+$, with price $P_n$. A forward contract to buy one share at time $N$ for $K$ dollars has payoff $F_N = S_N - K$ at time $N$ and price $F_n$ at earlier times, also given by the risk-neutral pricing formula.
-   * (i) If at time zero you buy a forward contract and a put, and hold them until expiration, explain why the payoff you receive is the same as the payoff of a call; i.e., explain why $C_N = F_N + P_N$.
-   * (ii) Using the risk-neutral pricing formulas for $C_n$, $P_n$, and $F_n$, and the linearity of conditional expectations, show that $C_n = F_n + P_n$ for every $n$.
-   * (iii) Using the fact that the discounted stock price is a martingale under the risk-neutral measure, show that $F_0 = S_0 - \frac{K}{(1+r)^N}$.
-   * (iv) Show that starting at time zero with $F_0$, buying one share of stock and borrowing as necessary, with no further trades, gives a portfolio valued at $F_N$ at time $N$ (static replication of the forward contract).
-   * (v) The forward price is the value of $K$ that makes the forward contract worth zero at time zero; here it is $(1+r)^N S_0$. Show that, at time zero, a call struck at the forward price has the same price as a put struck at the forward price (put-call parity).
-   * (vi) If $K = (1+r)^N S_0$, do we have $C_n = P_n$ for every $n$?
+     * (i) If at time zero you buy a forward contract and a put, and hold them until expiration, explain why the payoff you receive is the same as the payoff of a call; i.e., explain why $C_N = F_N + P_N$.
+     * (ii) Using the risk-neutral pricing formulas for $C_n$, $P_n$, and $F_n$, and the linearity of conditional expectations, show that $C_n = F_n + P_n$ for every $n$.
+     * (iii) Using the fact that the discounted stock price is a martingale under the risk-neutral measure, show that $F_0 = S_0 - \frac{K}{(1+r)^N}$.
+     * (iv) Show that starting at time zero with $F_0$, buying one share of stock and borrowing as necessary, with no further trades, gives a portfolio valued at $F_N$ at time $N$ (static replication of the forward contract).
+     * (v) The forward price is the value of $K$ that makes the forward contract worth zero at time zero; here it is $(1+r)^N S_0$. Show that, at time zero, a call struck at the forward price has the same price as a put struck at the forward price (put-call parity).
+     * (vi) If $K = (1+r)^N S_0$, do we have $C_n = P_n$ for every $n$?
    * **Exercise 2.12 (p. 59):** Let $1 \le m \le N-1$ and $K > 0$ be given. A chooser option is a contract sold at time zero that confers on its owner the right to receive either a call or a put at time $m$. The owner of the chooser may wait until time $m$ before choosing. The call or put chosen expires at time $N$ with strike price $K$. Show that the time-zero price of a chooser option is the sum of the time-zero price of a put, expiring at time $N$ and having strike price $K$, and a call, expiring at time $m$ and having strike price $\frac{K}{(1+r)^{N-m}}$. (Hint: Use put-call parity (Exercise 2.11).)
 
 7. **Cross-references**
