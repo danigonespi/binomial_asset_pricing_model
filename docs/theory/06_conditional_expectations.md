@@ -22,11 +22,17 @@
 
    $$S_n(\omega_1 \dots \omega_n) = \frac{1}{1+r} [ \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) ] \quad \text{(2.3.3)}$$
 
-   $$\tilde{\mathbb{E}}_n [S_{n+1}]{}(\omega_1 \dots \omega_n) = \tilde{p} S_{n+1}(\omega_1    \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) \quad \text{(2.3.4)}$$
+   $$
+\tilde{\mathbb{E}}_n [S_{n+1}](\omega_1 \dots \omega_n) = \tilde{p} S_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q} S_{n+1}(\omega_1 \dots \omega_n T) \quad \text{(2.3.4)}
+$$
 
-   $$S_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n [S_{n+1}] \quad \text{(2.3.5)}$$
+   $$
+S_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n [S_{n+1}] \quad \text{(2.3.5)}
+$$
 
-   $$\mathbb{E}_n [X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\\#H(\omega_{n+1} \dots \omega_N)} q^{\\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}$$
+   $$
+\mathbb{E}_n [X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\#H(\omega_{n+1} \dots \omega_N)} q^{\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}
+$$
 
    $$\tilde{\mathbb{E}}_0[X] = \tilde{\mathbb{E}}X \quad \text{(2.3.7)}$$
 
