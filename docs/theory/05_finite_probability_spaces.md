@@ -43,7 +43,7 @@ $$
 $$
 \varphi(x) = \max\{\ell(x);\ \ell \text{ linear},\ \ell(y) \le \varphi(y)\ \forall y \in \mathbb{R}\} \quad \text{(2.2.1)}
 $$
-Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\#H(\omega)}q^{\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\#H/\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
+Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\\#H(\omega)}q^{\\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\\#H/\\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
 
 3. **Assumptions and domain of validity**
 
