@@ -7,8 +7,8 @@
    * $n$: Given and fixed time index satisfying $1 \le n \le N$.
    * $\omega_1 \dots \omega_n$: Given and fixed sequence of the first $n$ coin tosses.
    * $\omega_{n+1} \dots \omega_N$: Continuation sequence of coin tosses, with $2^{N-n}$ possible continuations.
-   * $\#H(\omega_{n+1} \dots \omega_N)$: Number of heads in the continuation sequence.
-   * $\#T(\omega_{n+1} \dots \omega_N)$: Number of tails in the continuation sequence.
+   * $\\#H(\omega_{n+1} \dots \omega_N)$: Number of heads in the continuation sequence.
+   * $\\#T(\omega_{n+1} \dots \omega_N)$: Number of tails in the continuation sequence.
    * $\mathbb{E}_n[X]$: Conditional expectation of $X$ based on the information at time $n$ (Definition 2.3.1).
    * $\tilde{\mathbb{E}}_n[X]$: Conditional expectation of $X$ computed under the risk-neutral probabilities $\tilde{p}$ and $\tilde{q}$.
    * $\mathbb{E}_0[X]$: Conditional expectation based on no information, defined as $\mathbb{E}_0[X] = \mathbb{E}X$.
@@ -31,7 +31,7 @@
    $$
 
    $$
-   \mathbb{E}_n[X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\#H(\omega_{n+1} \dots \omega_N)} q^{\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}
+   \mathbb{E}_n[X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\\#H(\omega_{n+1} \dots \omega_N)} q^{\\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}
    $$
 
    $$\tilde{\mathbb{E}}_0[X] = \tilde{\mathbb{E}}X \quad \text{(2.3.7)}$$
