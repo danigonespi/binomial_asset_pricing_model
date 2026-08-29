@@ -37,7 +37,7 @@ S_n = \frac{1}{1+r} \tilde{\mathbb{E}}_n [S_{n+1}] \quad \text{(2.3.5)}
 $$
 
 $$
-\mathbb{E}_n [X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\#H(\omega_{n+1} \dots \omega_N)} q^{\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}
+\mathbb{E}_n [X](\omega_1 \dots \omega_n) = \sum_{\omega_{n+1} \dots \omega_N} p^{\\#H(\omega_{n+1} \dots \omega_N)} q^{\\#T(\omega_{n+1} \dots \omega_N)} X(\omega_1 \dots \omega_n \omega_{n+1} \dots \omega_N) \quad \text{(2.3.6)}
 $$
 
 $$
