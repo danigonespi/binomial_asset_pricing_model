@@ -104,7 +104,7 @@ $$ \mathbb{E}*n[f(X,Y)](\omega_1\dots\omega_n) = \sum*{\omega_{n+1}\dots\omega_N
 3. **Treat known variables as constants:** On the right-hand side of the sum, replace the random variable $X(\omega_1\dots\omega_n)$ with the constant value $x$ because it is fully determined by the first $n$ tosses.
 4. **Rewrite as unconditional expectation:** Observe that the resulting sum matches exactly the definition of the unconditional expectation $\mathbb{E}[f(x, Y)]$:
 
-$$ g(x) = \mathbb{E}[f(x, Y)] = \sum_{\omega_{n+1}\dots\omega_N} f(x, Y(\omega_{n+1}\dots\omega_N)) p^{#H(\omega_{n+1}\dots\omega_N)} q^{#T(\omega_{n+1}\dots\omega_N)} $$
+$$ g(x) = \mathbb{E}[f(x, Y)] = \sum_{\omega_{n+1}\dots\omega_N} f(x, Y(\omega_{n+1}\dots\omega_N)) p^{\\#H(\omega_{n+1}\dots\omega_N)} q^{\\#T(\omega_{n+1}\dots\omega_N)} $$
 
 5. **Reintroduce the random variable:** Substitute the dummy variable $x$ back with $X(\omega_1\dots\omega_n)$ to conclude that $\mathbb{E}_n[f(X, Y)](\omega_1\dots\omega_n) = g(X(\omega_1\dots\omega_n))$ $\blacksquare$.
 
