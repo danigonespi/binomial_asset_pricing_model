@@ -18,45 +18,85 @@
 
 3. **Key equations**
 
-   $$X_1 = \Delta_0 S_1 + (1+r)(V_0 - \Delta_0 S_0) \quad \text{(1.2.1)}$$
+$$
+X_1 = \Delta_0 S_1 + (1+r)(V_0 - \Delta_0 S_0) \quad \text{(1.2.1)}
+$$
 
-   $$X_1(H) = \Delta_0 S_1(H) + (1+r)(V_0 - \Delta_0 S_0) \quad \text{(1.2.2)}$$
+$$
+X_1(H) = \Delta_0 S_1(H) + (1+r)(V_0 - \Delta_0 S_0) \quad \text{(1.2.2)}
+$$
 
-   $$X_1(T) = \Delta_0 S_1(T) + (1+r)(V_0 - \Delta_0 S_0) \quad \text{(1.2.3)}$$
+$$
+X_1(T) = \Delta_0 S_1(T) + (1+r)(V_0 - \Delta_0 S_0) \quad \text{(1.2.3)}
+$$
 
-   $$V_2 = \Delta_1 S_2 + (1+r)(X_1 - \Delta_1 S_1) \quad \text{(1.2.4)}$$
+$$
+V_2 = \Delta_1 S_2 + (1+r)(X_1 - \Delta_1 S_1) \quad \text{(1.2.4)}
+$$
 
-   $$V_2(HH) = \Delta_1(H)S_2(HH) + (1+r)(X_1(H) - \Delta_1(H)S_1(H)) \quad \text{(1.2.5)}$$
+$$
+V_2(HH) = \Delta_1(H)S_2(HH) + (1+r)(X_1(H) - \Delta_1(H)S_1(H)) \quad \text{(1.2.5)}
+$$
 
-   $$V_2(HT) = \Delta_1(H)S_2(HT) + (1+r)(X_1(H) - \Delta_1(H)S_1(H)) \quad \text{(1.2.6)}$$
+$$
+V_2(HT) = \Delta_1(H)S_2(HT) + (1+r)(X_1(H) - \Delta_1(H)S_1(H)) \quad \text{(1.2.6)}
+$$
 
-   $$V_2(TH) = \Delta_1(T)S_2(TH) + (1+r)(X_1(T) - \Delta_1(T)S_1(T)) \quad \text{(1.2.7)}$$
+$$
+V_2(TH) = \Delta_1(T)S_2(TH) + (1+r)(X_1(T) - \Delta_1(T)S_1(T)) \quad \text{(1.2.7)}
+$$
 
-   $$V_2(TT) = \Delta_1(T)S_2(TT) + (1+r)(X_1(T) - \Delta_1(T)S_1(T)) \quad \text{(1.2.8)}$$
+$$
+V_2(TT) = \Delta_1(T)S_2(TT) + (1+r)(X_1(T) - \Delta_1(T)S_1(T)) \quad \text{(1.2.8)}
+$$
 
-   $$\Delta_1(T) = \frac{V_2(TH) - V_2(TT)}{S_2(TH) - S_2(TT)} \quad \text{(1.2.9)}$$
+$$
+\Delta_1(T) = \frac{V_2(TH) - V_2(TT)}{S_2(TH) - S_2(TT)} \quad \text{(1.2.9)}
+$$
 
-   $$X_1(T) = \frac{1}{1+r} [\tilde{p}V_2(TH) + \tilde{q}V_2(TT)] \quad \text{(1.2.10)}$$
+$$
+X_1(T) = \frac{1}{1+r} [\tilde{p}V_2(TH) + \tilde{q}V_2(TT)] \quad \text{(1.2.10)}
+$$
 
-   $$V_1(T) = \frac{1}{1+r} [\tilde{p}V_2(TH) + \tilde{q}V_2(TT)] \quad \text{(1.2.11)}$$
+$$
+V_1(T) = \frac{1}{1+r} [\tilde{p}V_2(TH) + \tilde{q}V_2(TT)] \quad \text{(1.2.11)}
+$$
 
-   $$\Delta_1(H) = \frac{V_2(HH) - V_2(HT)}{S_2(HH) - S_2(HT)} \quad \text{(1.2.12)}$$
+$$
+\Delta_1(H) = \frac{V_2(HH) - V_2(HT)}{S_2(HH) - S_2(HT)} \quad \text{(1.2.12)}
+$$
 
-   $$V_1(H) = \frac{1}{1+r} [\tilde{p}V_2(HH) + \tilde{q}V_2(HT)] \quad \text{(1.2.13)}$$
+$$
+V_1(H) = \frac{1}{1+r} [\tilde{p}V_2(HH) + \tilde{q}V_2(HT)] \quad \text{(1.2.13)}
+$$
 
-   $$X_{n+1} = \Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n) \quad \text{(1.2.14)}$$
+$$
+X_{n+1} = \Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n) \quad \text{(1.2.14)}
+$$
 
-   $$\tilde{p} = \frac{1+r-d}{u-d}, \quad \tilde{q} = \frac{u-1-r}{u-d} \quad \text{(1.2.15)}$$
+$$
+\tilde{p} = \frac{1+r-d}{u-d}, \quad \tilde{q} = \frac{u-1-r}{u-d} \quad \text{(1.2.15)}
+$$
 
-   $$V_n(\omega_1\omega_2\dots\omega_n) = \frac{1}{1+r}[\tilde{p}V_{n+1}(\omega_1\omega_2\dots\omega_nH) + \tilde{q}V_{n+1}(\omega_1\omega_2\dots\omega_nT)] \quad \text{(1.2.16)}$$
+$$
+V_n(\omega_1\omega_2\dots\omega_n) = \frac{1}{1+r}[\tilde{p}V_{n+1}(\omega_1\omega_2\dots\omega_nH) + \tilde{q}V_{n+1}(\omega_1\omega_2\dots\omega_nT)] \quad \text{(1.2.16)}
+$$
 
-   $$\Delta_n(\omega_1\dots\omega_n) = \frac{V_{n+1}(\omega_1\dots\omega_nH) - V_{n+1}(\omega_1\dots\omega_nT)}{S_{n+1}(\omega_1\dots\omega_nH) - S_{n+1}(\omega_1\dots\omega_nT)} \quad \text{(1.2.17)}$$
+$$
+\Delta_n(\omega_1\dots\omega_n) = \frac{V_{n+1}(\omega_1\dots\omega_nH) - V_{n+1}(\omega_1\dots\omega_nT)}{S_{n+1}(\omega_1\dots\omega_nH) - S_{n+1}(\omega_1\dots\omega_nT)} \quad \text{(1.2.17)}
+$$
 
-   $$X_N(\omega_1\omega_2\dots\omega_N) = V_N(\omega_1\omega_2\dots\omega_N) \text{ for all } \omega_1\omega_2\dots\omega_N \quad \text{(1.2.18)}$$
+$$
+X_N(\omega_1\omega_2\dots\omega_N) = V_N(\omega_1\omega_2\dots\omega_N) \text{ for all } \omega_1\omega_2\dots\omega_N \quad \text{(1.2.18)}
+$$
 
-   $$X_n(\omega_1\dots\omega_n) = V_n(\omega_1\dots\omega_n) \quad \text{(1.2.19)}$$
+$$
+X_n(\omega_1\dots\omega_n) = V_n(\omega_1\dots\omega_n) \quad \text{(1.2.19)}
+$$
 
-   $$X_{n+1}(H) = \Delta_n u S_n + (1+r)(X_n - \Delta_n S_n) \quad \text{(1.2.20)}$$
+$$
+X_{n+1}(H) = \Delta_n u S_n + (1+r)(X_n - \Delta_n S_n) \quad \text{(1.2.20)}
+$$
 
 4. **Assumptions and domain of validity**
 

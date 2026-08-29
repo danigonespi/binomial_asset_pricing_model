@@ -13,36 +13,45 @@
    * $\text{Var}(X)$: Variance of $X$ (p. 29–30).
 
 3. **Key equations**
+$$
+\Omega = \{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT\} \quad \text{(2.1.1)}
+$$
+$$
+\mathbb{P}(HHH)=p^3,\ \mathbb{P}(HHT)=p^2q,\ \mathbb{P}(HTH)=p^2q,\ \mathbb{P}(HTT)=pq^2,
+$$
+$$
+\mathbb{P}(THH)=p^2q,\ \mathbb{P}(THT)=pq^2,\ \mathbb{P}(TTH)=pq^2,\ \mathbb{P}(TTT)=q^3 \quad \text{(2.1.2)}
+$$
+$$
+\mathbb{P}(\omega_1 = H) = p \quad \text{(2.1.3)}
+$$
+$$
+\sum_{\omega \in \Omega} \mathbb{P}(\omega) = 1 \quad \text{(2.1.4)}
+$$
+$$
+\mathbb{P}(A) = \sum_{\omega \in A} \mathbb{P}(\omega) \quad \text{(2.1.5)}
+$$
+$$
+\mathbb{P}(\Omega) = 1 \quad \text{(2.1.6)}
+$$
+$$
+\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B), \quad A \cap B = \emptyset \quad \text{(2.1.7)}
+$$
+$$
+\mathbb{E}X = \sum_{\omega \in \Omega} X(\omega)\mathbb{P}(\omega) \quad \text{(Definition 2.2.4)}
+$$
+$$
+\varphi(x) = \max\{\ell(x);\ \ell \text{ linear},\ \ell(y) \le \varphi(y)\ \forall y \in \mathbb{R}\} \quad \text{(2.2.1)}
+$$
+Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\#H(\omega)}q^{\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\#H/\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
 
-   $$\Omega = \{HHH, HHT, HTH, HTT, THH, THT, TTH, TTT\} \quad \text{(2.1.1)}$$
-
-   $$\mathbb{P}(HHH)=p^3,\ \mathbb{P}(HHT)=p^2q,\ \mathbb{P}(HTH)=p^2q,\ \mathbb{P}(HTT)=pq^2,$$
-
-   $$\mathbb{P}(THH)=p^2q,\ \mathbb{P}(THT)=pq^2,\ \mathbb{P}(TTH)=pq^2,\ \mathbb{P}(TTT)=q^3 \quad \text{(2.1.2)}$$
-
-   $$\mathbb{P}(\omega_1 = H) = p \quad \text{(2.1.3)}$$
-
-   $$\sum_{\omega \in \Omega} \mathbb{P}(\omega) = 1 \quad \text{(2.1.4)}$$
-
-   $$\mathbb{P}(A) = \sum_{\omega \in A} \mathbb{P}(\omega) \quad \text{(2.1.5)}$$
-
-   $$\mathbb{P}(\Omega) = 1 \quad \text{(2.1.6)}$$
-
-   $$\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B), \quad A \cap B = \emptyset \quad \text{(2.1.7)}$$
-
-   $$\mathbb{E}X = \sum_{\omega \in \Omega} X(\omega)\mathbb{P}(\omega) \quad \text{(Definition 2.2.4)}$$
-
-   $$\varphi(x) = \max\{\ell(x);\ \ell \text{ linear},\ \ell(y) \le \varphi(y)\ \forall y \in \mathbb{R}\} \quad \text{(2.2.1)}$$
-
-   Note: the general pattern $\mathbb{P}(\omega_1\dots\omega_N) = p^{\\#H(\omega)}q^{\\#T(\omega)}$ is not introduced in Section 2.1 — Shreve only writes out the explicit 8-term enumeration (2.1.2) here. The compact $\mathit{\\#H/\\#T}$ notation first appears in Section 2.3, as part of the conditional expectation formula.
-
-4. **Assumptions and domain of validity**
+3. **Assumptions and domain of validity**
 
    * **Finiteness of $\Omega$:** $\Omega$ must be finite and nonempty. For infinite (continuous-time) sample spaces, probabilities can no longer be defined by summing over individual $\omega$; this requires $\sigma$-algebras and Lebesgue integration, treated in Volume II.
    * **$\mathbb{P}$ well-defined:** requires $0 \le \mathbb{P}(\omega) \le 1$ for every $\omega$ and $\sum_\omega \mathbb{P}(\omega)=1$ (Eq. 2.1.4). Outcomes with $\mathbb{P}(\omega)=0$ are explicitly permitted.
    * **Jensen's inequality (Theorem 2.2.5):** requires $X$ defined on a finite probability space and $\varphi$ convex. If $\varphi$ is instead strictly concave, the inequality reverses: $\mathbb{E}[\varphi(X)] \le \varphi(\mathbb{E}X)$.
 
-5. **Theorems and proof outline**
+4. **Theorems and proof outline**
 
    **Theorem 2.2.5 (Jensen's inequality):** Let $X$ be a random variable on a finite probability space and $\varphi$ a convex function. Then $\mathbb{E}[\varphi(X)] \ge \varphi(\mathbb{E}X)$.
 
@@ -53,12 +62,12 @@
    4. By linearity of expectation, $\mathbb{E}[\ell(X)] = \ell(\mathbb{E}X)$.
    5. Since this holds for every such $\ell$, it holds for the maximum over all of them evaluated at $\mathbb{E}X$, which equals $\varphi(\mathbb{E}X)$ by step 1.
 
-6. **Exercises in this section**
+5. **Exercises in this section**
 
    * **Exercise 2.1:** Using Definition 2.1.1, show (i) $\mathbb{P}(A^c) = 1-\mathbb{P}(A)$ for an event $A$ with complement $A^c$; (ii) for a finite set of events $A_1,\dots,A_N$, $\mathbb{P}(\bigcup_{n=1}^N A_n) \le \sum_{n=1}^N \mathbb{P}(A_n)$ (Eq. 2.8.1), with equality when the events are disjoint.
    * **Exercise 2.2:** Consider the stock price $S_3$ of Figure 2.3.1. (i) Give the distribution of $S_3$ under the risk-neutral probabilities $p=\tilde p=\frac12,\ q=\tilde q=\frac12$. (ii) Compute $\mathbb{E}S_1,\mathbb{E}S_2,\mathbb{E}S_3$ and the average growth rate of the stock under $\tilde{\mathbb{P}}$. (iii) Repeat (i) and (ii) under the actual probabilities $p=\frac23,\ q=\frac13$.
 
-7. **Cross-references**
+6. **Cross-references**
 
    * **Chapter 1 (Sections 1.1, 1.2):** the multiperiod stock price tree and parameters $u,d,r$ supply the primary random variables analyzed here.
    * **Section 2.3:** the expectation $\mathbb{E}X$ is extended to conditional expectation $\mathbb{E}_n[X]$; this is also where the general $p^{\\#H}q^{\\#T}$ notation is actually introduced.

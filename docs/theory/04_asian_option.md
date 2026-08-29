@@ -18,10 +18,12 @@
 3. **Key equations**
 
    *(Note: The author does not assign explicit equation numbers within this specific exercise. The mathematical definitions formulated in the problem statement are presented with the exact notation).*
-
-   $$Y_n = \sum_{k=0}^n S_k$$
-
-   $$v_3(s, y) = \left(\frac{y}{4} - 4\right)^+$$
+$$
+Y_n = \sum_{k=0}^n S_k
+$$
+$$
+v_3(s, y) = \left(\frac{y}{4} - 4\right)^+
+$$
 
 4. **Assumptions and domain of validity**
 
