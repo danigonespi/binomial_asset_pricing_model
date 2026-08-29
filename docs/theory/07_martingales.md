@@ -150,10 +150,9 @@ $$
    *Proof Outline:*
    
    1. **Substitute wealth recursion:** Write the conditional expectation of the discounted wealth at $n+1$:
-
-      $$
-      \tilde{\mathbb{E}}_n \left[ \frac{X_{n+1}}{(1+r)^{n+1}} \right] = \tilde{\mathbb{E}}_n \left[ \frac{\Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)}{(1+r)^{n+1}} \right]
-      $$
+$$
+\tilde{\mathbb{E}}_n \left[ \frac{X_{n+1}}{(1+r)^{n+1}} \right] = \tilde{\mathbb{E}}_n \left[ \frac{\Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)}{(1+r)^{n+1}} \right]
+$$
 
    2. **Linearity expansion:** Use the linearity of conditional expectations (Theorem 2.3.2(i)) to split the expectation into stock-related and cash-related fractions.
    3. **Factor out known variables:** Since $\Delta_n$, $X_n$, and $S_n$ are known at time $n$, apply "taking out what is known" (Theorem 2.3.2(ii)) to factor them outside of $\tilde{\mathbb{E}}_n$.
