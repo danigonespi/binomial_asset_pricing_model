@@ -149,45 +149,25 @@ $$
 
    *Proof Outline:*
    
-   1. **Substitute wealth recursion:** Write the conditional expectation of the discounted wealth at $n+1$:
-$$
-\tilde{\mathbb{E}}_n \left[ \frac{X_{n+1}}{(1+r)^{n+1}} \right] = \tilde{\mathbb{E}}_n \left[ \frac{\Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)}{(1+r)^{n+1}} \right]
-$$
+   1. **Substitute wealth recursion:** Write the conditional expectation of the discounted wealth at $n+1$: $\tilde{\mathbb{E}}_n \left[ \frac{X_{n+1}}{(1+r)^{n+1}} \right] = \tilde{\mathbb{E}}_n \left[ \frac{\Delta_n S_{n+1} + (1+r)(X_n - \Delta_n S_n)}{(1+r)^{n+1}} \right]
+$
 
    2. **Linearity expansion:** Use the linearity of conditional expectations (Theorem 2.3.2(i)) to split the expectation into stock-related and cash-related fractions.
    3. **Factor out known variables:** Since $\Delta_n$, $X_n$, and $S_n$ are known at time $n$, apply "taking out what is known" (Theorem 2.3.2(ii)) to factor them outside of $\tilde{\mathbb{E}}_n$.
    4. **Incorporate stock martingale property:** Use the martingale property of the discounted stock price (Theorem 2.4.4) to replace $\tilde{\mathbb{E}}_n\left[ \frac{S_{n+1}}{(1+r)^{n+1}} \right]$ with $\frac{S_n}{(1+r)^n}$.
-   5. **Simplify algebraically:** This reduces the right-hand side of the wealth equation to:
-
-      $$
-      \Delta_n \frac{S_n}{(1+r)^n} + \frac{X_n - \Delta_n S_n}{(1+r)^n} = \frac{X_n}{(1+r)^n}
-      $$
-
-      This proves the martingale relation (2.4.7).
+   5. **Simplify algebraically:** This reduces the right-hand side of the wealth equation to $\Delta_n \frac{S_n}{(1+r)^n} + \frac{X_n - \Delta_n S_n}{(1+r)^n} = \frac{X_n}{(1+r)^n}$. This proves the martingale relation (2.4.7).
 
    **Theorem 2.4.7 (Risk-Neutral Pricing Formula):** Let $V_N$ be the payoff at time $N$ of a derivative security. For $n$ between $0$ and $N$, the no-arbitrage price $V_n$ of the derivative is given by (2.4.11).
 
    *Proof Outline:*
    
    1. **Replication boundary condition:** Let $X_n$ be the wealth process of a replicating portfolio that satisfies $X_N = V_N$.
-   2. **Stochastic martingale pricing:** Because $\frac{X_n}{(1+r)^n}$ is a risk-neutral martingale (Theorem 2.4.5), apply the multi-step-ahead martingale property (Remark 2.4.2) to write:
+   2. **Stochastic martingale pricing:** Because $\frac{X_n}{(1+r)^n}$ is a risk-neutral martingale (Theorem 2.4.5), apply the multi-step-ahead martingale property (Remark 2.4.2) to write $\frac{X_n}{(1+r)^n} = \tilde{\mathbb{E}}_n \left[ \frac{X_N}{(1+r)^N} \right]$
 
-      $$
-      \frac{X_n}{(1+r)^n} = \tilde{\mathbb{E}}_n \left[ \frac{X_N}{(1+r)^N} \right]
-      $$
-
-   3. **Evaluate at boundary:** Replace $X_N$ with the target payoff $V_N$ inside the expectation:
-
-      $$
-      \frac{X_n}{(1+r)^n} = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^N} \right]
-      $$
+   3. **Evaluate at boundary:** Replace $X_N$ with the target payoff $V_N$ inside the expectation: $\frac{X_n}{(1+r)^n} = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^N} \right]$
 
    4. **Define option price:** Apply the no-arbitrage principle (Definition 1.2.3) to set the option price $V_n = X_n$, which yields (2.4.10).
-   5. **Isolate $V_n$:** Multiply both sides by $(1+r)^n$ to isolate $V_n$ and obtain the risk-neutral pricing formula:
-
-      $$
-      V_n = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^{N-n}} \right]
-      $$
+   5. **Isolate $V_n$:** Multiply both sides by $(1+r)^n$ to isolate $V_n$ and obtain the risk-neutral pricing formula:$V_n = \tilde{\mathbb{E}}_n \left[ \frac{V_N}{(1+r)^{N-n}} \right]$
 
    6. **Verify martingale property:** Re-apply the martingale definition to the resulting discounted price process $\frac{V_n}{(1+r)^n}$ to verify (2.4.12).
 
