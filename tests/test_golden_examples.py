@@ -196,3 +196,23 @@ def test_example_2_5_4_running_maximum_is_not_markov(base_model):
         
     assert not is_markov(space, process_1d)
     assert is_markov(space, process_2d)
+
+def test_eq_2_3_2_and_2_3_5_risk_neutral_pricing_one_step(base_model):
+    """
+    Eq (2.3.2): (p_tilde*u + q_tilde*d) / (1+r) == 1
+    Eq (2.3.5): S_n = 1/(1+r) * E_n[S_{n+1}] under risk-neutral measure.
+    """
+    p_tilde, q_tilde = base_model.risk_neutral_prob
+    
+    # Verifies Eq 2.3.2 algebraic identity
+    assert math.isclose((p_tilde * base_model.u + q_tilde * base_model.d) / (1 + base_model.r), 1.0)
+    
+    # Verifies Eq 2.3.5 for n=1 -> S_1 = 1/(1+r) E_1[S_2]
+    space = CoinTossSpace(n_periods=2, p=p_tilde)
+    S_2 = {w: base_model.price_path(w)[-1] for w in space.get_omega()}
+    
+    E_1_S_2 = space.conditional_expectation(S_2, 1)
+    
+    for prefix in E_1_S_2:
+        S_1 = base_model.price_path(prefix)[-1]
+        assert math.isclose(S_1, (1 / (1 + base_model.r)) * E_1_S_2[prefix])

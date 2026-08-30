@@ -63,7 +63,7 @@ class CoinTossSpace:
     def conditional_expectation(self, x: dict[str, float], n: int) -> dict[str, float]:
         """
         Conditional expectation of X based on information at time n.
-        Uses Definition 2.3.1 and Eq. (2.3.6).
+        Uses Definition 2.3.1 and Eq. (2.3.6). Also satisfies Eq. (2.3.8) when n=N.
         """
         if not x:
             return {}
