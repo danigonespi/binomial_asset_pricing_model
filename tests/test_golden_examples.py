@@ -216,3 +216,131 @@ def test_eq_2_3_2_and_2_3_5_risk_neutral_pricing_one_step(base_model):
     for prefix in E_1_S_2:
         S_1 = base_model.price_path(prefix)[-1]
         assert math.isclose(S_1, (1 / (1 + base_model.r)) * E_1_S_2[prefix])
+
+def test_theorem_2_4_5_discounted_wealth_is_martingale(base_model):
+    """
+    Theorem 2.4.5: Discounted wealth is a martingale under risk-neutral measure.
+    Uses Eq. (2.4.6) and verifies Eq. (2.4.7).
+    """
+    N = 3
+    call = EuropeanCall(strike=5.0)
+    engine = PricingEngine()
+    result = engine.price(base_model, call, n_periods=N)
+
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=N, p=p_tilde)
+
+    # Generate Wealth Process X_n recursively from Eq (2.4.6)
+    X = []
+    for n in range(N + 1):
+        X_n = {}
+        if n == 0:
+            X_n[""] = result.v0  # Self-financing starts exactly at V0
+            X.append(X_n)
+            continue
+
+        for seq in product("HT", repeat=n):
+            path = "".join(seq)
+            prev_path = path[:-1]
+            
+            delta_n = result.delta_grid[prev_path]
+            X_prev = X[n-1][prev_path]
+            
+            S_prev = base_model.price_path(prev_path)[-1] if prev_path else base_model.s0
+            S_curr = base_model.price_path(path)[-1]
+
+            # X_{n+1} = Delta_n S_{n+1} + (1+r)(X_n - Delta_n S_n)
+            X_n[path] = delta_n * S_curr + (1 + base_model.r) * (X_prev - delta_n * S_prev)
+        X.append(X_n)
+
+    # Convert to Discounted Wealth Process
+    discounted_X = []
+    for n in range(N + 1):
+        discounted_X.append({p: v / ((1 + base_model.r)**n) for p, v in X[n].items()})
+
+    assert is_martingale(space, discounted_X)
+
+
+def test_exercise_2_8_risk_neutral_pricing_formula(base_model):
+    """
+    Exercise 2.8: Demonstrates that recursive algorithm pricing V_n (1.2.16) 
+    exactly matches the risk-neutral conditional expectation Eq. (2.4.11).
+    """
+    N = 3
+    payoff = LookbackOption()
+    result = PricingEngine().price(base_model, payoff, n_periods=N)
+
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=N, p=p_tilde)
+
+    # Extract V_N directly from the pricing engine result grid
+    V_N = {path: result.value_grid[path] for path in space.get_omega()}
+
+    for n in range(N):
+        expected_V_N = space.conditional_expectation(V_N, n)
+        discount_factor = (1 + base_model.r) ** (N - n)
+
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for prefix in prefixes:
+            v_n_martingale = expected_V_N[prefix] / discount_factor
+            v_n_algorithmic = result.value_grid[prefix]
+            assert math.isclose(v_n_martingale, v_n_algorithmic, abs_tol=1e-9)
+
+
+def test_exercise_2_11_put_call_parity(base_model):
+    """
+    Exercise 2.11: Put-Call Parity properties for European Options and Forwards.
+    Confirms C_n = F_n + P_n, and verifies static Forward pricing F_0.
+    """
+    N = 3
+    K = 5.0
+    
+    engine = PricingEngine()
+    res_c = engine.price(base_model, EuropeanCall(strike=K), n_periods=N)
+    res_p = engine.price(base_model, EuropeanPut(strike=K), n_periods=N)
+    res_f = engine.price(base_model, Forward(delivery_price=K), n_periods=N)
+
+    # Verifies part 2: C_n = F_n + P_n globally in the lattice
+    for n in range(N + 1):
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for p in prefixes:
+            c_n = res_c.value_grid[p]
+            expected_c_n = res_f.value_grid[p] + res_p.value_grid[p]
+            assert math.isclose(c_n, expected_c_n, abs_tol=1e-9)
+
+    # Verifies part 3: F_0 = S_0 - K / (1+r)^N
+    expected_f0 = base_model.s0 - K / ((1 + base_model.r)**N)
+    assert math.isclose(res_f.v0, expected_f0, abs_tol=1e-9)
+
+
+def test_exercise_2_12_chooser_option(base_model):
+    """
+    Exercise 2.12: Evaluates a Chooser option at time m.
+    Shows the time 0 price is Put(K, N) + Call(K / (1+r)^{N-m}, m)
+    relying solely on martingale properties and engine combinations.
+    """
+    N = 3
+    m = 1
+    K = 5.0
+
+    engine = PricingEngine()
+    res_call_N = engine.price(base_model, EuropeanCall(strike=K), n_periods=N)
+    res_put_N = engine.price(base_model, EuropeanPut(strike=K), n_periods=N)
+
+    # The chooser payoff at time m evaluates to max(C_m, P_m)
+    chooser_m = {}
+    for seq in product("HT", repeat=m):
+        path = "".join(seq)
+        chooser_m[path] = max(res_call_N.value_grid[path], res_put_N.value_grid[path])
+
+    # Price back the chooser from m to 0 using the risk-neutral formula Eq (2.4.11)
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=m, p=p_tilde)
+    chooser_0 = space.expectation(chooser_m) / ((1 + base_model.r)**m)
+
+    # Verify the mathematical identity claimed by the exercise
+    adjusted_strike = K / ((1 + base_model.r)**(N - m))
+    price_put_N = res_put_N.v0
+    price_call_m = engine.price(base_model, EuropeanCall(strike=adjusted_strike), n_periods=m).v0
+
+    assert math.isclose(chooser_0, price_put_N + price_call_m, abs_tol=1e-9)

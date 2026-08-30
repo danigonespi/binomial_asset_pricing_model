@@ -20,6 +20,43 @@ def is_martingale(space: CoinTossSpace, process: list[dict[str, float]]) -> bool
                 
     return True
 
+def is_submartingale(space: CoinTossSpace, process: list[dict[str, float]]) -> bool:
+    """
+    Verifies if an adapted stochastic process is a submartingale.
+    Uses Definition 2.4.1(ii): M_n <= E_n[M_{n+1}].
+    """
+    if len(process) != space.n_periods + 1:
+        raise ValueError("The process must have exactly N+1 steps (from 0 to N).")
+
+    for n in range(len(process) - 1):
+        expected_next = space.conditional_expectation(process[n+1], n)
+        current = process[n]
+        
+        for prefix in current:
+            if current[prefix] > expected_next[prefix] + 1e-9:
+                return False
+                
+    return True
+
+def is_supermartingale(space: CoinTossSpace, process: list[dict[str, float]]) -> bool:
+    """
+    Verifies if an adapted stochastic process is a supermartingale.
+    Uses Definition 2.4.1(iii): M_n >= E_n[M_{n+1}].
+    """
+    if len(process) != space.n_periods + 1:
+        raise ValueError("The process must have exactly N+1 steps (from 0 to N).")
+
+    for n in range(len(process) - 1):
+        expected_next = space.conditional_expectation(process[n+1], n)
+        current = process[n]
+        
+        for prefix in current:
+            if current[prefix] < expected_next[prefix] - 1e-9:
+                return False
+                
+    return True
+
+
 def _round_val(val: Any) -> Any:
     """Helper to handle float precision when grouping states (works for K-dimensions too)."""
     if isinstance(val, float):
