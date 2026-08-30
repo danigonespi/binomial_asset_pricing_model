@@ -107,3 +107,40 @@ class AsianOption(PathDependentPayoff):
 
     def terminal_value(self, s_final: float, aggregate_final: float) -> float:
         return max(aggregate_final / (self.n_periods + 1) - self.strike, 0.0)
+
+class DelayedAsianOption(PathDependentPayoff):
+    """
+    Asian option with delayed averaging (starts at M+1). Exercise 2.14.
+    The state aggregate is a tuple (n, y_n) to track time and the running sum.
+    """
+    def __init__(self, strike: float, n_periods: int, m_delay: int) -> None:
+        self.strike = strike
+        self.n_periods = n_periods
+        self.m_delay = m_delay
+
+    def initial_aggregate(self, s0: float) -> tuple[int, float]:
+        """
+        If M=0, the sum starts immediately with S_0.
+        Otherwise, the sum is 0.0 and we just track the current step n=0.
+        """
+        return (0, 0.0 if self.m_delay > 0 else s0)
+
+    def update_aggregate(self, aggregate: tuple[int, float], s_next: float) -> tuple[int, float]:
+        """
+        Increments the step counter. If the next step is strictly greater than M,
+        the stock price is added to the running sum.
+        """
+        n, current_sum = aggregate
+        next_n = n + 1
+        
+        if next_n > self.m_delay:
+            return (next_n, current_sum + s_next)
+        return (next_n, 0.0)
+
+    def terminal_value(self, s_final: float, aggregate_final: tuple[int, float]) -> float:
+        _, final_sum = aggregate_final
+        # Averages over (N - M) periods.
+        n_terms = self.n_periods - self.m_delay
+        if n_terms <= 0:
+            return 0.0
+        return max(final_sum / n_terms - self.strike, 0.0)

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from binomial_pricer.payoffs import Payoff, EuropeanCall, EuropeanPut, Forward, LookbackOption, PathDependentPayoff, AsianOption
+from binomial_pricer.payoffs import Payoff, EuropeanCall, EuropeanPut, Forward, LookbackOption, PathDependentPayoff, AsianOption, DelayedAsianOption
 
 def test_payoff_abc_cannot_be_instantiated_directly():
     with pytest.raises(TypeError):
@@ -59,5 +59,15 @@ class TestAsianOption:
     def test_compute_manual_path_hth(self):
         """Isolated manual HTH path: S=[4, 8, 4, 8], Y_3=24. Payoff = max(24/4 - 4, 0) = 2.0."""
         payoff = AsianOption(strike=4.0, n_periods=3)
+        path = np.array([4.0, 8.0, 4.0, 8.0])
+        assert payoff.compute(path) == 2.0
+
+class TestDelayedAsianOption:
+    def test_compute_manual_path_hth(self):
+        """
+        Isolated manual HTH path for M=1. Exercise 2.14 logic.
+        Path: S=[4, 8, 4, 8]. Average of S2, S3 is (4+8)/2 = 6. Payoff = max(6 - 4, 0) = 2.0.
+        """
+        payoff = DelayedAsianOption(strike=4.0, n_periods=3, m_delay=1)
         path = np.array([4.0, 8.0, 4.0, 8.0])
         assert payoff.compute(path) == 2.0

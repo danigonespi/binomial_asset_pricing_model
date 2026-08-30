@@ -2,7 +2,7 @@ import pytest
 import math
 from itertools import product
 from binomial_pricer.equity_model import BinomialStockModel
-from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward
+from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward, DelayedAsianOption
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
 from binomial_pricer.probability_space import CoinTossSpace
 from binomial_pricer.stochastic_properties import is_martingale, is_markov
@@ -344,3 +344,97 @@ def test_exercise_2_12_chooser_option(base_model):
     price_call_m = engine.price(base_model, EuropeanCall(strike=adjusted_strike), n_periods=m).v0
 
     assert math.isclose(chooser_0, price_put_N + price_call_m, abs_tol=1e-9)
+
+def test_exercise_2_7_martingale_not_markov():
+    """
+    Exercise 2.7: A stochastic process that is a martingale but not Markov.
+    Constructs a custom M_n where reaching the exact same state (M_2 = 0) 
+    via two different paths (HH vs TH) leads to two strictly different 
+    future probability distributions for M_3, destroying the Markov property.
+    """
+    space = CoinTossSpace(n_periods=3, p=0.5)
+    
+    # We define M_0 = 0
+    # M_1(H) = 1, M_1(T) = -1
+    # M_2(HH) = 0, M_2(HT) = 2  => E_1[M_2](H) = 1
+    # M_2(TH) = 0, M_2(TT) = -2 => E_1[M_2](T) = -1
+    # M_3 from HH (val 0): H->1, T->-1 => E_2[M_3](HH) = 0
+    # M_3 from TH (val 0): H->5, T->-5 => E_2[M_3](TH) = 0
+    # (The conditional expectations hold the martingale property, but 
+    # the variance/distribution jumping from state '0' diverges wildly).
+    
+    process = [
+        {"": 0.0},
+        {"H": 1.0, "T": -1.0},
+        {"HH": 0.0, "HT": 2.0, "TH": 0.0, "TT": -2.0},
+        {
+            "HHH": 1.0, "HHT": -1.0,
+            "HTH": 2.0, "HTT": 2.0,
+            "THH": 5.0, "THT": -5.0,
+            "TTH": -2.0, "TTT": -2.0
+        }
+    ]
+    
+    assert is_martingale(space, process)
+    assert not is_markov(space, process)
+
+def test_exercise_2_13_asian_option_markov(base_model):
+    """
+    Exercise 2.13 (i): The two-dimensional process (S_n, Y_n) where Y_n = sum_{k=0}^n S_k
+    is a valid K-dimensional Markov process.
+    """
+    N = 3
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=N, p=p_tilde)
+    
+    process = []
+    for n in range(N + 1):
+        state_n = {}
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for p in prefixes:
+            prices = base_model.price_path(p)
+            y_n = sum(prices)
+            s_n = prices[-1]
+            state_n[p] = (s_n, y_n)
+        process.append(state_n)
+        
+    assert is_markov(space, process)
+
+def test_exercise_2_14_delayed_asian_option_markov_and_pricing(base_model):
+    """
+    Exercise 2.14: Delayed Asian option pricing where Y_n sums S_k from M+1 to N.
+    (i) Verifies the (S_n, Y_n) process is Markov under the risk-neutral measure.
+    (ii) Validates state reduction engine against brute-force engine.
+    """
+    N = 3
+    M = 1
+    K = 4.0
+    
+    # --- Part (i): Verify Markov Property ---
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=N, p=p_tilde)
+    
+    process = []
+    for n in range(N + 1):
+        state_n = {}
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for p in prefixes:
+            prices = base_model.price_path(p)
+            # Conditional summing logic from the exercise
+            if n <= M:
+                y_n = 0.0
+            else:
+                y_n = sum(prices[M+1:n+1])
+            s_n = prices[-1]
+            state_n[p] = (s_n, y_n)
+        process.append(state_n)
+        
+    assert is_markov(space, process)
+    
+    # --- Part (ii): Verify algorithmic state reduction pricing ---
+    payoff = DelayedAsianOption(strike=K, n_periods=N, m_delay=M)
+    res_brute = PricingEngine().price(base_model, payoff, n_periods=N)
+    res_reduced = ReducedStateEngine().price(base_model, payoff, n_periods=N)
+    
+    assert res_reduced.v0 == pytest.approx(res_brute.v0)
+    assert res_reduced.delta0 == pytest.approx(res_brute.delta0)
