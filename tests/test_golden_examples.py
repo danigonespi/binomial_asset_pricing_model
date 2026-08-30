@@ -2,7 +2,7 @@ import pytest
 import math
 from itertools import product
 from binomial_pricer.equity_model import BinomialStockModel
-from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption
+from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
 from binomial_pricer.probability_space import CoinTossSpace
 from binomial_pricer.stochastic_properties import is_martingale, is_markov

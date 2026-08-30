@@ -66,7 +66,7 @@ class EuropeanPut(Payoff):
         self.strike = strike
 
     def compute(self, path: np.ndarray) -> float:
-        """European put option payoff: max(s - S_N, 0)."""
+        """European put option payoff: max(s - s_N, 0)."""
         return max(self.strike - path[-1], 0.0)
 
 
