@@ -1,7 +1,11 @@
 import pytest
+import math
+from itertools import product
 from binomial_pricer.equity_model import BinomialStockModel
 from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
+from binomial_pricer.probability_space import CoinTossSpace
+from binomial_pricer.stochastic_properties import is_martingale, is_markov
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -97,3 +101,98 @@ def test_exercise_1_8_asian_option_state_reduction(base_model):
     assert res_brute.v0 == pytest.approx(expected_v0)
     assert res_reduced.v0 == pytest.approx(expected_v0)
     assert res_reduced.delta0 == pytest.approx(res_brute.delta0)
+
+def test_exercise_2_2_expectations(base_model):
+    """
+    Exercise 2.2: Compute ES1, ES2, ES3 under risk-neutral (p=1/2) 
+    and actual (p=2/3) probabilities.
+    """
+    rn_space = CoinTossSpace(n_periods=3, p=0.5)
+    S1 = {w: base_model.price_path(w)[1] for w in rn_space.get_omega()}
+    S2 = {w: base_model.price_path(w)[2] for w in rn_space.get_omega()}
+    S3 = {w: base_model.price_path(w)[3] for w in rn_space.get_omega()}
+    
+    # Under risk-neutral (p=0.5), E[S_n] = S_0 * (1+r)^n. 
+    # Here S0 = 4.0, r = 0.25 -> 1+r = 1.25
+    assert math.isclose(rn_space.expectation(S1), 4.0 * 1.25)
+    assert math.isclose(rn_space.expectation(S2), 4.0 * (1.25**2))
+    assert math.isclose(rn_space.expectation(S3), 4.0 * (1.25**3))
+    
+    # Under actual (p=2/3), mean growth rate is pu + qd = (2/3)*2 + (1/3)*0.5 = 1.5
+    act_space = CoinTossSpace(n_periods=3, p=2/3)
+    assert math.isclose(act_space.expectation(S1), 4.0 * 1.5)
+    assert math.isclose(act_space.expectation(S2), 4.0 * (1.5**2))
+    assert math.isclose(act_space.expectation(S3), 4.0 * (1.5**3))
+
+def test_exercise_2_4_random_walk_martingale():
+    """Exercise 2.4: Symmetric random walk is a martingale."""
+    space = CoinTossSpace(n_periods=3, p=0.5)
+    
+    # M_n = sum_{j=1}^n X_j where X_j = 1 if H else -1
+    process = []
+    for n in range(4):
+        if n == 0:
+            process.append({"": 0.0})
+            continue
+            
+        M_n = {}
+        for seq in product("HT", repeat=n):
+            path = "".join(seq)
+            M_n[path] = sum(1.0 if coin == 'H' else -1.0 for coin in path)
+        process.append(M_n)
+        
+    assert is_martingale(space, process)
+
+def test_theorem_2_4_4_discounted_stock_is_martingale(base_model):
+    """Theorem 2.4.4: Discounted stock price is a martingale under risk-neutral measure."""
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=3, p=p_tilde)
+    
+    process = []
+    for n in range(4):
+        S_n = {}
+        if n == 0:
+            S_n[""] = base_model.s0
+            process.append(S_n)
+            continue
+            
+        for seq in product("HT", repeat=n):
+            path = "".join(seq)
+            prices = base_model.price_path(path)
+            S_n[path] = prices[-1] / ((1 + base_model.r) ** n)
+        process.append(S_n)
+        
+    assert is_martingale(space, process)
+
+def test_example_2_5_4_running_maximum_is_not_markov(base_model):
+    """
+    Example 2.5.4: M_n = max S_k alone is NOT a Markov process.
+    However, the two-dimensional state (S_n, M_n) IS Markov (per generalizations in 2.13).
+    """
+    space = CoinTossSpace(n_periods=3, p=2/3) 
+    
+    process_1d = []
+    process_2d = []
+    
+    for n in range(4):
+        M_n = {}
+        M_n_2d = {}
+        if n == 0:
+            M_n[""] = base_model.s0
+            M_n_2d[""] = (base_model.s0, base_model.s0)
+            process_1d.append(M_n)
+            process_2d.append(M_n_2d)
+            continue
+            
+        for seq in product("HT", repeat=n):
+            path = "".join(seq)
+            prices = base_model.price_path(path)
+            maximum = max(prices)
+            M_n[path] = maximum
+            M_n_2d[path] = (prices[-1], maximum)
+            
+        process_1d.append(M_n)
+        process_2d.append(M_n_2d)
+        
+    assert not is_markov(space, process_1d)
+    assert is_markov(space, process_2d)
