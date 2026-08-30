@@ -35,7 +35,8 @@ class CoinTossSpace:
     def probability(self, omega: str) -> float:
         """
         Probability measure assigning to each path in Omega a probability.
-        Uses Eq. (2.1.2) and Eq. (2.3.6) logic (p^#H * q^#T).
+        Generalizes the enumeration of Eq. (2.1.2) to N periods, using the
+        compact p^#H * q^#T notation formalized in Eq. (2.3.6).
         """
         h_count = omega.count('H')
         t_count = omega.count('T')
@@ -69,6 +70,8 @@ class CoinTossSpace:
             return {}
             
         m = len(next(iter(x.keys())))
+        if any(len(k) != m for k in x):
+            raise ValueError("All keys in x must have the same length -- X must be a random variable defined at a single, uniform time.")
         if not (0 <= n <= m <= self.n_periods):
             raise ValueError(f"Time index n={n} must be <= m={m} <= N={self.n_periods}")
 
