@@ -53,7 +53,7 @@ class TestPathDependentPayoffHooks:
         assert getattr(dummy, "init_called", False)
         assert getattr(dummy, "update_called", False)
         assert getattr(dummy, "terminal_called", False)
-        assert res == 15.0  # (2.0 + 3.0) * 3.0 = 15.0
+        assert res == 15.0 
 
 class TestAsianOption:
     def test_compute_manual_path_hth(self):

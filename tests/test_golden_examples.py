@@ -112,13 +112,10 @@ def test_exercise_2_2_expectations(base_model):
     S2 = {w: base_model.price_path(w)[2] for w in rn_space.get_omega()}
     S3 = {w: base_model.price_path(w)[3] for w in rn_space.get_omega()}
     
-    # Under risk-neutral (p=0.5), E[S_n] = S_0 * (1+r)^n. 
-    # Here S0 = 4.0, r = 0.25 -> 1+r = 1.25
     assert math.isclose(rn_space.expectation(S1), 4.0 * 1.25)
     assert math.isclose(rn_space.expectation(S2), 4.0 * (1.25**2))
     assert math.isclose(rn_space.expectation(S3), 4.0 * (1.25**3))
     
-    # Under actual (p=2/3), mean growth rate is pu + qd = (2/3)*2 + (1/3)*0.5 = 1.5
     act_space = CoinTossSpace(n_periods=3, p=2/3)
     assert math.isclose(act_space.expectation(S1), 4.0 * 1.5)
     assert math.isclose(act_space.expectation(S2), 4.0 * (1.5**2))
@@ -128,7 +125,6 @@ def test_exercise_2_4_random_walk_martingale():
     """Exercise 2.4: Symmetric random walk is a martingale."""
     space = CoinTossSpace(n_periods=3, p=0.5)
     
-    # M_n = sum_{j=1}^n X_j where X_j = 1 if H else -1
     process = []
     for n in range(4):
         if n == 0:
@@ -204,10 +200,8 @@ def test_eq_2_3_2_and_2_3_5_risk_neutral_pricing_one_step(base_model):
     """
     p_tilde, q_tilde = base_model.risk_neutral_prob
     
-    # Verifies Eq 2.3.2 algebraic identity
     assert math.isclose((p_tilde * base_model.u + q_tilde * base_model.d) / (1 + base_model.r), 1.0)
     
-    # Verifies Eq 2.3.5 for n=1 -> S_1 = 1/(1+r) E_1[S_2]
     space = CoinTossSpace(n_periods=2, p=p_tilde)
     S_2 = {w: base_model.price_path(w)[-1] for w in space.get_omega()}
     
@@ -230,12 +224,11 @@ def test_theorem_2_4_5_discounted_wealth_is_martingale(base_model):
     p_tilde, _ = base_model.risk_neutral_prob
     space = CoinTossSpace(n_periods=N, p=p_tilde)
 
-    # Generate Wealth Process X_n recursively from Eq (2.4.6)
     X = []
     for n in range(N + 1):
         X_n = {}
         if n == 0:
-            X_n[""] = result.v0  # Self-financing starts exactly at V0
+            X_n[""] = result.v0  
             X.append(X_n)
             continue
 
@@ -249,11 +242,9 @@ def test_theorem_2_4_5_discounted_wealth_is_martingale(base_model):
             S_prev = base_model.price_path(prev_path)[-1] if prev_path else base_model.s0
             S_curr = base_model.price_path(path)[-1]
 
-            # X_{n+1} = Delta_n S_{n+1} + (1+r)(X_n - Delta_n S_n)
             X_n[path] = delta_n * S_curr + (1 + base_model.r) * (X_prev - delta_n * S_prev)
         X.append(X_n)
 
-    # Convert to Discounted Wealth Process
     discounted_X = []
     for n in range(N + 1):
         discounted_X.append({p: v / ((1 + base_model.r)**n) for p, v in X[n].items()})
@@ -273,7 +264,6 @@ def test_exercise_2_8_risk_neutral_pricing_formula(base_model):
     p_tilde, _ = base_model.risk_neutral_prob
     space = CoinTossSpace(n_periods=N, p=p_tilde)
 
-    # Extract V_N directly from the pricing engine result grid
     V_N = {path: result.value_grid[path] for path in space.get_omega()}
 
     for n in range(N):
@@ -300,7 +290,6 @@ def test_exercise_2_11_put_call_parity(base_model):
     res_p = engine.price(base_model, EuropeanPut(strike=K), n_periods=N)
     res_f = engine.price(base_model, Forward(delivery_price=K), n_periods=N)
 
-    # Verifies part 2: C_n = F_n + P_n globally in the lattice
     for n in range(N + 1):
         prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
         for p in prefixes:
@@ -308,7 +297,6 @@ def test_exercise_2_11_put_call_parity(base_model):
             expected_c_n = res_f.value_grid[p] + res_p.value_grid[p]
             assert math.isclose(c_n, expected_c_n, abs_tol=1e-9)
 
-    # Verifies part 3: F_0 = S_0 - K / (1+r)^N
     expected_f0 = base_model.s0 - K / ((1 + base_model.r)**N)
     assert math.isclose(res_f.v0, expected_f0, abs_tol=1e-9)
 
@@ -327,18 +315,15 @@ def test_exercise_2_12_chooser_option(base_model):
     res_call_N = engine.price(base_model, EuropeanCall(strike=K), n_periods=N)
     res_put_N = engine.price(base_model, EuropeanPut(strike=K), n_periods=N)
 
-    # The chooser payoff at time m evaluates to max(C_m, P_m)
     chooser_m = {}
     for seq in product("HT", repeat=m):
         path = "".join(seq)
         chooser_m[path] = max(res_call_N.value_grid[path], res_put_N.value_grid[path])
 
-    # Price back the chooser from m to 0 using the risk-neutral formula Eq (2.4.11)
     p_tilde, _ = base_model.risk_neutral_prob
     space = CoinTossSpace(n_periods=m, p=p_tilde)
     chooser_0 = space.expectation(chooser_m) / ((1 + base_model.r)**m)
 
-    # Verify the mathematical identity claimed by the exercise
     adjusted_strike = K / ((1 + base_model.r)**(N - m))
     price_put_N = res_put_N.v0
     price_call_m = engine.price(base_model, EuropeanCall(strike=adjusted_strike), n_periods=m).v0
@@ -353,16 +338,6 @@ def test_exercise_2_7_martingale_not_markov():
     future probability distributions for M_3, destroying the Markov property.
     """
     space = CoinTossSpace(n_periods=3, p=0.5)
-    
-    # We define M_0 = 0
-    # M_1(H) = 1, M_1(T) = -1
-    # M_2(HH) = 0, M_2(HT) = 2  => E_1[M_2](H) = 1
-    # M_2(TH) = 0, M_2(TT) = -2 => E_1[M_2](T) = -1
-    # M_3 from HH (val 0): H->1, T->-1 => E_2[M_3](HH) = 0
-    # M_3 from TH (val 0): H->5, T->-5 => E_2[M_3](TH) = 0
-    # (The conditional expectations hold the martingale property, but 
-    # the variance/distribution jumping from state '0' diverges wildly).
-    
     process = [
         {"": 0.0},
         {"H": 1.0, "T": -1.0},
@@ -410,7 +385,6 @@ def test_exercise_2_14_delayed_asian_option_markov_and_pricing(base_model):
     M = 1
     K = 4.0
     
-    # --- Part (i): Verify Markov Property ---
     p_tilde, _ = base_model.risk_neutral_prob
     space = CoinTossSpace(n_periods=N, p=p_tilde)
     
@@ -420,7 +394,6 @@ def test_exercise_2_14_delayed_asian_option_markov_and_pricing(base_model):
         prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
         for p in prefixes:
             prices = base_model.price_path(p)
-            # Conditional summing logic from the exercise
             if n <= M:
                 y_n = 0.0
             else:
@@ -431,7 +404,6 @@ def test_exercise_2_14_delayed_asian_option_markov_and_pricing(base_model):
         
     assert is_markov(space, process)
     
-    # --- Part (ii): Verify algorithmic state reduction pricing ---
     payoff = DelayedAsianOption(strike=K, n_periods=N, m_delay=M)
     res_brute = PricingEngine().price(base_model, payoff, n_periods=N)
     res_reduced = ReducedStateEngine().price(base_model, payoff, n_periods=N)

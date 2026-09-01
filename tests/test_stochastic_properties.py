@@ -33,17 +33,14 @@ def test_deterministic_process_is_trivially_markov():
 def test_submartingale_and_supermartingale_validation():
     space = CoinTossSpace(n_periods=2, p=0.5)
     
-    # A true martingale satisfies both inequalities
     martingale = [{"": 0.0}, {"H": 1.0, "T": -1.0}, {"HH": 2.0, "HT": 0.0, "TH": 0.0, "TT": -2.0}]
     assert is_submartingale(space, martingale)
     assert is_supermartingale(space, martingale)
 
-    # Submartingale (expected value grows)
     submartingale = [{"": 0.0}, {"H": 1.5, "T": -0.5}, {"HH": 3.0, "HT": 1.0, "TH": 1.0, "TT": -1.0}]
     assert is_submartingale(space, submartingale)
     assert not is_supermartingale(space, submartingale)
 
-    # Supermartingale (expected value shrinks)
     supermartingale = [{"": 0.0}, {"H": 0.5, "T": -1.5}, {"HH": 1.0, "HT": -1.0, "TH": -1.0, "TT": -3.0}]
     assert is_supermartingale(space, supermartingale)
     assert not is_submartingale(space, supermartingale)
@@ -69,7 +66,7 @@ def test_exercise_2_3_convex_function_of_martingale_is_submartingale():
         phi_M.append({path: val**2 for path, val in M[n].items()})
 
     assert is_submartingale(space, phi_M)
-    assert not is_martingale(space, phi_M)  # Strictly convex functions destroy the pure equality
+    assert not is_martingale(space, phi_M)  
 
 
 def test_exercise_2_4_geometric_symmetric_random_walk():
