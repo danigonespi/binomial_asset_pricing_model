@@ -99,10 +99,11 @@ $$\zeta_n = \frac{Z_n}{(1+r)^n}, \quad n = 0, 1, \dots, N \quad \text{(3.2.7)}$$
 * **Exercise 3.4 (p. 84) (parts (iii)-(iv) only):** This problem refers to the model of Example 3.1.2, whose Radon-Nikodym process $Z_n$ appears in Figure 3.2.1. (Parts (i)-(ii), computing $\zeta_3(\omega)$ and pricing the Asian option of Exercise 1.8 via (3.1.10), are covered in the Section 3.1 card — see 09_change_of_measure.md.)
   (iii) Compute also the state price densities $\zeta_2(HT)=\zeta_2(TH)$ explicitly.
   (iv) Use the risk-neutral pricing formula (3.2.6) in the form $V_2(HT)=\frac{1}{\zeta_2(HT)}\mathbb{E}_2[\zeta_3V_3](HT)$, $V_2(TH)=\frac{1}{\zeta_2(TH)}\mathbb{E}_2[\zeta_3V_3](TH)$ to compute $V_2(HT)$ and $V_2(TH)$. You should get $V_2(HT)=v_2(4,16)$ and $V_2(TH)=v_2(4,10)$, where $v_2(s,y)$ was computed in part (ii) of Exercise 1.8 of Chapter 1. Note that $V_2(HT)\neq V_2(TH)$.
+* **Exercise 3.5 (Stochastic volatility, random interest rate) — deferred.** Builds on Exercise 2.9 of Chapter 2 (state price density formula (3.2.6) rewritten without the risk-neutral measure, applied to a model with random $u_n,d_n,r_n$). Per project decision, deferred jointly with Exercises 1.9 and 2.9 to the Chapter 6 cards.
 
 ## 7. Cross-references
 
 * **Theorem 2.3.2 (Chapter 2, p. 34):** Iterated conditioning (iii) and taking out what is known (ii) are the core justifications for Theorem 3.2.1, Lemma 3.2.5, and Lemma 3.2.6.
 * **Example 3.1.2 (Chapter 3, p. 62):** Supplies the joint probabilities, risk-neutral probabilities, and parameters ($p=2/3,q=1/3,\tilde{p}=\tilde{q}=1/2,r=1/4$) used in Example 3.2.3 and Exercise 3.4.
 * **Exercise 1.8 (Chapter 1, p. 22):** Defines the three-period Asian call option whose intermediate and terminal pricing is verified via state price densities in Exercise 3.4.
-* **Chapter 6 (Interest-Rate-Dependent Assets):** *(Unverified — not yet audited against the Chapter 6 pages of the PDF.)* NotebookLM reports that $Z_n$ is generalized there to models with random interest rates via an $m$-forward measure construction (cited as Section 6.4, Eq. 6.4.3, p. 160). Treat these specific numbers as unconfirmed until Chapter 6 is audited.
+* **Chapter 6 (Interest-Rate-Dependent Assets):** *(Unverified — not yet audited against the Chapter 6 pages of the PDF.)* 
