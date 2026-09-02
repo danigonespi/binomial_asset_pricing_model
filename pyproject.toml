@@ -13,7 +13,8 @@ requires-python = ">=3.10"
 dependencies = [
     "numpy", 
     "pytest", 
-    "matplotlib"
+    "matplotlib",
+    "scipy"
 ]
 
 [tool.setuptools.packages.find]

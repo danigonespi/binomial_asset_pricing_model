@@ -139,7 +139,6 @@ class DelayedAsianOption(PathDependentPayoff):
 
     def terminal_value(self, s_final: float, aggregate_final: tuple[int, float]) -> float:
         _, final_sum = aggregate_final
-        # Averages over (N - M) periods.
         n_terms = self.n_periods - self.m_delay
         if n_terms <= 0:
             return 0.0

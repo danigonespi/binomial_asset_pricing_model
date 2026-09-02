@@ -56,7 +56,6 @@ def is_supermartingale(space: CoinTossSpace, process: list[dict[str, float]]) ->
                 
     return True
 
-
 def _round_val(val: Any) -> Any:
     """Helper to handle float precision when grouping states (works for K-dimensions too)."""
     if isinstance(val, float):
@@ -81,7 +80,6 @@ def is_markov(space: CoinTossSpace, process: list[dict[str, Any]]) -> bool:
         current = process[n]
         next_state = process[n+1]
 
-        # Group prefixes by their actual state value at step n
         value_groups: dict[Any, list[str]] = {}
         for prefix, val in current.items():
             val_rounded = _round_val(val)
@@ -93,7 +91,6 @@ def is_markov(space: CoinTossSpace, process: list[dict[str, Any]]) -> bool:
             if len(prefixes) < 2:
                 continue
                 
-            # Compute the conditional distribution of X_{n+1} for each prefix in the same state
             distributions = []
             for prefix in prefixes:
                 val_h = _round_val(next_state[prefix + 'H'])
@@ -104,7 +101,6 @@ def is_markov(space: CoinTossSpace, process: list[dict[str, Any]]) -> bool:
                 dist[val_t] = dist.get(val_t, 0.0) + space.q
                 distributions.append(dist)
 
-            # Check if all paths leading to this state share the exact same next-state distribution
             first_dist = distributions[0]
             for other_dist in distributions[1:]:
                 if first_dist.keys() != other_dist.keys():
