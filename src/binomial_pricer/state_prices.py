@@ -22,17 +22,30 @@ def radon_nikodym_derivative(actual_space: CoinTossSpace, rn_space: CoinTossSpac
         
     return z_dict
 
-def state_price_density(actual_space: CoinTossSpace, rn_space: CoinTossSpace, r: float, n_periods: int = None) -> dict[str, float]:
+def state_price_density(
+    actual_space: CoinTossSpace,
+    rn_space: CoinTossSpace,
+    r: float,
+    n_periods: int | None = None,
+    z_dict: dict[str, float] | None = None,
+) -> dict[str, float]:
     """
     Calculates the state price density zeta(omega), which is the Radon-Nikodym 
     derivative Z(omega) discounted by the money market account over N periods.
     
     Uses Eq. (3.1.9).
+
+    If z_dict is provided (e.g. already computed once via
+    radon_nikodym_derivative), it is reused instead of recomputed -- useful
+    when the same Z(omega) is needed for several purposes without
+    recalculating it from actual_space and rn_space each time.
     """
     if n_periods is None:
         n_periods = actual_space.n_periods
-        
-    z_dict = radon_nikodym_derivative(actual_space, rn_space)
+
+    if z_dict is None:
+        z_dict = radon_nikodym_derivative(actual_space, rn_space)
+
     discount_factor = (1 + r) ** n_periods
     
     zeta_dict = {}
