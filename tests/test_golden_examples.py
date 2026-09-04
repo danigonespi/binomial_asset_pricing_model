@@ -14,6 +14,12 @@ from binomial_pricer.state_prices import (
     state_price_density_process,
     price_step_via_state_density_process,
 )
+from binomial_pricer.optimal_investment import (
+    LogUtility,
+    PowerUtility,
+    solve_optimal_investment,
+    solve_goal_probability_maximization
+)
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -560,3 +566,88 @@ def test_exercise_3_3_discounted_stock_martingale(base_model):
     m_process = [actual_space.conditional_expectation(s_3_dict, n) for n in range(n_periods + 1)]
     
     assert is_martingale(actual_space, m_process)
+
+
+def test_example_3_3_2_log_utility():
+    """
+    Example 3.3.2: Two-period optimal investment under log utility.
+    Cross-validates the general solver against hand-verified numeric values.
+    """
+    model = BinomialStockModel(s0=4.0, u=2.0, d=0.5, r=0.25)
+    actual_space = CoinTossSpace(n_periods=2, p=2/3)
+    utility = LogUtility()
+
+    x_n_dict, result = solve_optimal_investment(model, actual_space, utility, x0=4.0)
+
+    assert x_n_dict["HH"] == pytest.approx(100.0 / 9.0)
+    assert x_n_dict["HT"] == pytest.approx(50.0 / 9.0)
+    assert x_n_dict["TH"] == pytest.approx(50.0 / 9.0)
+    assert x_n_dict["TT"] == pytest.approx(25.0 / 9.0)
+
+    assert result.delta_grid[(0, 4.0)] == pytest.approx(5.0 / 9.0)
+    assert result.delta_grid[(1, 8.0)] == pytest.approx(25.0 / 54.0)
+    assert result.delta_grid[(1, 2.0)] == pytest.approx(25.0 / 27.0)
+
+    assert result.value_grid[(1, 8.0)] == pytest.approx(20.0 / 3.0)
+    assert result.value_grid[(1, 2.0)] == pytest.approx(10.0 / 3.0)
+
+
+def test_exercise_3_6_log_utility_process():
+    """
+    Exercise 3.6: Verify X_n = X_0 / zeta_n at every step n for LogUtility.
+    """
+    model = BinomialStockModel(s0=4.0, u=2.0, d=0.5, r=0.25)
+    actual_space = CoinTossSpace(n_periods=3, p=0.6)
+    rn_space = CoinTossSpace(n_periods=3, p=0.5)
+
+    utility = LogUtility()
+    x0 = 5.0
+    x_n_dict, result = solve_optimal_investment(model, actual_space, utility, x0=x0)
+
+    zeta_process = state_price_density_process(actual_space, rn_space, model.r)
+
+    for w in actual_space.get_omega():
+        for n in range(4):
+            prefix = w[:n]
+            s_n = model.price_path(prefix)[-1]
+            expected_x_n = x0 / zeta_process[n][prefix]
+            assert result.value_grid[(n, s_n)] == pytest.approx(expected_x_n)
+
+
+def test_exercise_3_7_power_utility_closed_form():
+    """
+    Exercise 3.7: Validate PowerUtility closed-form matches the 
+    general Lagrangian approach (Eq. 3.3.26 via brentq numeric solver).
+    """
+    model = BinomialStockModel(s0=4.0, u=2.0, d=0.5, r=0.25)
+    actual_space = CoinTossSpace(n_periods=3, p=0.6)
+
+    utility_exact = PowerUtility(p=-1.0)
+    x_n_exact, _ = solve_optimal_investment(model, actual_space, utility_exact, x0=10.0)
+
+    class GenericPowerUtility(PowerUtility):
+        def get_closed_form_lambda(self, x0, actual_space, z_dict, r):
+            return None
+            
+    utility_numeric = GenericPowerUtility(p=-1.0)
+    x_n_numeric, _ = solve_optimal_investment(model, actual_space, utility_numeric, x0=10.0)
+
+    for w in actual_space.get_omega():
+        assert x_n_exact[w] == pytest.approx(x_n_numeric[w])
+
+
+def test_exercise_3_9_goal_probability():
+    """
+    Exercise 3.9: Maximizing probability of reaching goal.
+    Assert X_N*(w) = gamma for the cheapest paths.
+    """
+    actual_space = CoinTossSpace(n_periods=2, p=2/3)
+    rn_space = CoinTossSpace(n_periods=2, p=0.5)
+
+    x_n_dict = solve_goal_probability_maximization(
+        actual_space, rn_space, r=0.25, x0=3.2, gamma=10.0
+    )
+
+    values = list(x_n_dict.values())
+    assert values.count(10.0) == 2
+    assert values.count(0.0) == 2

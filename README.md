@@ -22,6 +22,12 @@ The probabilistic machinery underlying Chapter 1's pricing formulas is now forma
 * **New Path-Dependent Payoff:** `DelayedAsianOption` implements the delayed-averaging Asian option of Exercise 2.14, reusing the same `PathDependentPayoff` interface from Chapter 1 without any change to the pricing engines.
 * **Extended Theorem Validation:** The golden-example test suite now verifies, against the engines already built in Chapter 1: the divergence between real-world and risk-neutral expectations (Exercise 2.2); the five fundamental properties of conditional expectation (Theorem 2.3.2); the martingale property of the discounted stock price and of the discounted self-financing wealth process (Theorems 2.4.4 and 2.4.5); the exact equivalence between Chapter 1's backward-recursion algorithm and the risk-neutral pricing formula (Exercise 2.8); put-call parity and the chooser option (Exercises 2.11 and 2.12); and the Markov vs. non-Markov distinction, including the book's own running-maximum counterexample (Example 2.5.4) and the Asian-option Markov proofs (Exercises 2.7, 2.13, 2.14).
 
+## Chapter 3 — State Prices
+* **Static Change of Measure:** Formalizes the Radon-Nikodym derivative $Z(\omega)$ and the state price density $\zeta(\omega)$ to execute a change of measure over the entire multiperiod tree, eliminating the need to solve replication equations directly (Section 3.1).
+* **Dynamic Change of Measure:** Derives the Radon-Nikodym derivative process $Z_n$ and state price density process $\zeta_n$ as actual-measure martingales to seamlessly price intermediate nodes (Section 3.2).
+* **Capital Asset Pricing:** Decouples optimal investment into a static Lagrangian constraint over terminal wealth states followed by standard replication. Implements exact closed-form utility solvers (Logarithmic, Power, Threshold) against generic non-linear `scipy` optimization (Section 3.3).
+* **Cross-Validation:** Golden examples guarantee numeric adherence between generic $brentq$ optimal inversion algorithms and analytical utility properties, as verified exactly by Example 3.3.2.
+
 ## Repository Structure
 
 The codebase is organized to clearly separate mathematical theory from implementation and testing:
