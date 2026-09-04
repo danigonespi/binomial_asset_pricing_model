@@ -6,6 +6,14 @@ from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, A
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
 from binomial_pricer.probability_space import CoinTossSpace
 from binomial_pricer.stochastic_properties import is_martingale, is_markov
+from binomial_pricer.state_prices import (
+    radon_nikodym_derivative,
+    state_price_density,
+    price_via_state_prices,
+    radon_nikodym_process,
+    state_price_density_process,
+    price_step_via_state_density_process,
+)
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -410,3 +418,145 @@ def test_exercise_2_14_delayed_asian_option_markov_and_pricing(base_model):
     
     assert res_reduced.v0 == pytest.approx(res_brute.v0)
     assert res_reduced.delta0 == pytest.approx(res_brute.delta0)
+
+def test_example_3_1_2_lookback_option(base_model):
+    """
+    Example 3.1.2: Pricing a three-period lookback option via Change of Measure.
+    Uses the model from Example 1.2.4 with actual probability p=2/3.
+    """
+    n_periods = 3
+    actual_space = CoinTossSpace(n_periods=n_periods, p=2/3)
+    rn_space = CoinTossSpace(n_periods=n_periods, p=0.5)
+
+    z_dict = radon_nikodym_derivative(actual_space, rn_space)
+    
+    assert z_dict["HHH"] == pytest.approx(27/64)
+    assert z_dict["HHT"] == pytest.approx(27/32)
+    assert z_dict["HTH"] == pytest.approx(27/32)
+    assert z_dict["HTT"] == pytest.approx(27/16)
+    assert z_dict["THH"] == pytest.approx(27/32)
+    assert z_dict["THT"] == pytest.approx(27/16)
+    assert z_dict["TTH"] == pytest.approx(27/16)
+    assert z_dict["TTT"] == pytest.approx(27/8)
+
+    payoff = LookbackOption()
+    payoff_dict = {
+        w: payoff.compute(base_model.price_path(w))
+        for w in actual_space.get_omega()
+    }
+
+    assert payoff_dict["HHH"] == pytest.approx(0.0)
+    assert payoff_dict["HHT"] == pytest.approx(8.0)
+    assert payoff_dict["HTT"] == pytest.approx(6.0)
+    assert payoff_dict["TTT"] == pytest.approx(3.5)
+
+    v0_rn = sum(
+        payoff_dict[w] * rn_space.probability(w)
+        for w in rn_space.get_omega()
+    ) / ((1 + base_model.r) ** n_periods)
+    assert v0_rn == pytest.approx(1.376)
+
+    zeta_dict = state_price_density(actual_space, rn_space, base_model.r, n_periods)
+    v0_state_prices = price_via_state_prices(payoff_dict, actual_space, zeta_dict)
+    assert v0_state_prices == pytest.approx(1.376)
+
+def test_exercise_3_4_asian_option(base_model):
+    """
+    Exercise 3.4 (i)-(ii): Explicitly compute state price densities and 
+    use them to price the Asian option of Exercise 1.8.
+    """
+    n_periods = 3
+    actual_space = CoinTossSpace(n_periods=n_periods, p=2/3)
+    rn_space = CoinTossSpace(n_periods=n_periods, p=0.5)
+
+    zeta_dict = state_price_density(actual_space, rn_space, base_model.r, n_periods)
+
+    assert zeta_dict["HHH"] == pytest.approx(0.216)  
+    
+    assert zeta_dict["HHT"] == pytest.approx(0.432)  
+    assert zeta_dict["HTH"] == pytest.approx(0.432)
+    assert zeta_dict["THH"] == pytest.approx(0.432)
+    
+    assert zeta_dict["HTT"] == pytest.approx(0.864)  
+    assert zeta_dict["THT"] == pytest.approx(0.864)
+    assert zeta_dict["TTH"] == pytest.approx(0.864)
+    
+    assert zeta_dict["TTT"] == pytest.approx(1.728)  
+
+    payoff = AsianOption(strike=4.0, n_periods=n_periods)
+    payoff_dict = {
+        w: payoff.compute(base_model.price_path(w))
+        for w in actual_space.get_omega()
+    }
+    
+    v0_asian = price_via_state_prices(payoff_dict, actual_space, zeta_dict)
+    assert v0_asian == pytest.approx(1.216)
+
+def test_example_3_2_3_radon_nikodym_process(base_model):
+    """
+    Example 3.2.3: Recomputes the Z_n process for the three-period model 
+    of Example 3.1.2 with actual probability p=2/3.
+    """
+    n_periods = 3
+    actual_space = CoinTossSpace(n_periods=n_periods, p=2/3)
+    rn_space = CoinTossSpace(n_periods=n_periods, p=0.5)
+
+    z_process = radon_nikodym_process(actual_space, rn_space)
+
+    assert z_process[2]["HH"] == pytest.approx(9/16)
+    assert z_process[2]["HT"] == pytest.approx(9/8)
+    assert z_process[2]["TH"] == pytest.approx(9/8)
+    assert z_process[2]["TT"] == pytest.approx(9/4)
+
+    assert z_process[1]["H"] == pytest.approx(3/4)
+    assert z_process[1]["T"] == pytest.approx(3/2)
+
+    assert z_process[0][""] == pytest.approx(1.0)
+
+
+def test_exercise_3_4_iii_iv_asian_option_state_prices(base_model):
+    """
+    Exercise 3.4 (iii)-(iv): Compute state price densities zeta_2 and use 
+    the state-price pricing formula at n=2 to recover V_2(HT) and V_2(TH) for 
+    the Exercise 1.8 Asian option.
+    """
+    n_periods = 3
+    actual_space = CoinTossSpace(n_periods=n_periods, p=2/3)
+    rn_space = CoinTossSpace(n_periods=n_periods, p=0.5)
+
+    zeta_process = state_price_density_process(actual_space, rn_space, base_model.r)
+    assert zeta_process[2]["HT"] == pytest.approx(zeta_process[2]["TH"])
+
+    payoff = AsianOption(strike=4.0, n_periods=n_periods)
+    payoff_dict = {
+        w: payoff.compute(base_model.price_path(w))
+        for w in actual_space.get_omega()
+    }
+    
+    v_2 = price_step_via_state_density_process(payoff_dict, actual_space, zeta_process, 2)
+    
+    assert v_2["HT"] != pytest.approx(v_2["TH"])
+
+    engine = ReducedStateEngine()
+    res_reduced = engine.price(base_model, payoff, n_periods=n_periods)
+    
+    v_2_ht_reduced = res_reduced.value_grid[(2, 4.0, 16.0)]
+    assert v_2["HT"] == pytest.approx(v_2_ht_reduced)
+    
+    v_2_th_reduced = res_reduced.value_grid[(2, 4.0, 10.0)]
+    assert v_2["TH"] == pytest.approx(v_2_th_reduced)
+
+
+def test_exercise_3_3_discounted_stock_martingale(base_model):
+    """
+    Exercise 3.3: Build M_n = E_n[S_3] for the model of Figure 3.1.1 with 
+    the actual probabilities (p=2/3), and assert it is a martingale.
+    """
+    n_periods = 3
+    actual_space = CoinTossSpace(n_periods=n_periods, p=2/3)
+    
+    s_3_dict = {w: base_model.price_path(w)[-1] for w in actual_space.get_omega()}
+    
+    m_process = [actual_space.conditional_expectation(s_3_dict, n) for n in range(n_periods + 1)]
+    
+    assert is_martingale(actual_space, m_process)

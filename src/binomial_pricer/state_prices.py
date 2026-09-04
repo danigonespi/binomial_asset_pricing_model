@@ -65,3 +65,55 @@ def price_via_state_prices(payoff_dict: dict[str, float], actual_space: CoinToss
     for omega, v_n in payoff_dict.items():
         v0 += v_n * zeta_dict[omega] * actual_space.probability(omega)
     return v0
+
+def radon_nikodym_process(actual_space: CoinTossSpace, rn_space: CoinTossSpace) -> list[dict[str, float]]:
+    """
+    Calculates the Radon-Nikodym derivative process Z_n.
+    
+    Defined as the conditional expectation of the terminal Radon-Nikodym 
+    derivative Z under the actual probability measure.
+    Uses Eq. (3.2.1) and Definition 3.2.4 (Eq. (3.2.2)).
+    """
+    z_terminal = radon_nikodym_derivative(actual_space, rn_space)
+    process = []
+    for n in range(actual_space.n_periods + 1):
+        z_n = actual_space.conditional_expectation(z_terminal, n)
+        process.append(z_n)
+    return process
+
+def state_price_density_process(actual_space: CoinTossSpace, rn_space: CoinTossSpace, r: float) -> list[dict[str, float]]:
+    """
+    Calculates the state price density process zeta_n, which is the 
+    Radon-Nikodym derivative process discounted at the risk-free rate.
+    
+    Uses Theorem 3.2.7 and Eq. (3.2.7).
+    """
+    z_process = radon_nikodym_process(actual_space, rn_space)
+    zeta_process = []
+    for n in range(actual_space.n_periods + 1):
+        discount_factor = (1 + r) ** n
+        zeta_n = {path: z_val / discount_factor for path, z_val in z_process[n].items()}
+        zeta_process.append(zeta_n)
+    return zeta_process
+
+def price_step_via_state_density_process(payoff_dict: dict[str, float], actual_space: CoinTossSpace, zeta_process: list[dict[str, float]], step: int) -> dict[str, float]:
+    """
+    Calculates the arbitrage-free price V_n of a derivative at a specific step n 
+    using the state price density process zeta_n and actual probability measure.
+    
+    Implements the third equality in Theorem 3.2.7, Eq. (3.2.6):
+    V_n = (1 / zeta_n) * E_n[zeta_N * V_N].
+    """
+    n_periods = actual_space.n_periods
+    if not (0 <= step <= n_periods):
+        raise ValueError("Step must be between 0 and N.")
+        
+    zeta_n = zeta_process[step]
+    zeta_N = zeta_process[n_periods]
+    
+    zeta_N_V_N = {w: zeta_N[w] * payoff_dict[w] for w in actual_space.get_omega()}
+    expected_zeta_N_V_N = actual_space.conditional_expectation(zeta_N_V_N, step)
+    
+    v_n = {prefix: (1.0 / zeta_n[prefix]) * expected_zeta_N_V_N[prefix] for prefix in zeta_n}
+    
+    return v_n
