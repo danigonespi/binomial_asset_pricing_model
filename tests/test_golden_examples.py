@@ -921,3 +921,34 @@ def test_exercise_4_6_and_4_7_bounds(base_model):
     
     lower_bound = v0_ec - base_model.s0 + K / ((1 + base_model.r) ** N)
     assert v0_ap >= lower_bound - 1e-9
+
+def test_example_4_2_1_put_premium_vs_call(base_model):
+    """
+    Contrast motivating Theorem 4.5.1: In the model of Example 4.2.1 
+    (S_0=4, u=2, d=0.5, r=0.25), an American put has a strict early exercise 
+    premium, while an American call does not.
+    """
+    K = 5.0
+    n_periods = 2
+    
+    put_payoff = EuropeanPut(strike=K)
+    call_payoff = EuropeanCall(strike=K)
+    
+    am_engine = AmericanEngine()
+    eu_engine = ReducedStateEngine()
+    
+    am_put_res = am_engine.price(base_model, put_payoff, n_periods)
+    eu_put_res = eu_engine.price(base_model, put_payoff, n_periods)
+    
+    assert am_put_res.v0 == pytest.approx(1.36)
+    assert am_put_res.v0 > eu_put_res.v0 + 1e-9
+    
+    assert any(c > 1e-9 for c in am_put_res.consumption_grid.values())
+    
+    am_call_res = am_engine.price(base_model, call_payoff, n_periods)
+    eu_call_res = eu_engine.price(base_model, call_payoff, n_periods)
+    
+    assert am_call_res.v0 == pytest.approx(eu_call_res.v0)
+    
+    for c in am_call_res.consumption_grid.values():
+        assert c == pytest.approx(0.0)

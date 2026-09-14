@@ -157,3 +157,51 @@ def test_american_path_dependent_properties(arbitrary_model):
         assert is_supermartingale(space, process)
         
         assert am_res.v0 >= eu_res.v0 - 1e-9
+
+
+def test_theorem_4_5_1_call_early_exercise_worthless():
+    """
+    Theorem 4.5.1: For an American derivative with a convex payoff g(s) 
+    satisfying g(0)=0 (such as a call) and r >= 0, early exercise is never optimal.
+    The American price exactly matches the European price.
+    """
+    models = [
+        BinomialStockModel(s0=10.0, u=1.2, d=0.9, r=0.05),
+        BinomialStockModel(s0=100.0, u=1.05, d=0.95, r=0.01),
+        BinomialStockModel(s0=50.0, u=1.5, d=0.5, r=0.1)
+    ]
+    strikes = [9.0, 10.0, 11.0, 50.0, 100.0]
+    n_periods = 3
+    
+    am_engine = AmericanEngine()
+    eu_engine = ReducedStateEngine()
+    
+    for model in models:
+        for k in strikes:
+            payoff = EuropeanCall(strike=k)
+            res_am = am_engine.price(model, payoff, n_periods)
+            res_eu = eu_engine.price(model, payoff, n_periods)
+            
+            assert res_am.v0 == pytest.approx(res_eu.v0)
+            
+            for state, c in res_am.consumption_grid.items():
+                assert c == pytest.approx(0.0)
+
+def test_theorem_4_5_1_negative_interest_rate_exception():
+    """
+    Theorem 4.5.1 strictly requires r >= 0.
+    The proof relies on Eq. (4.5.4) which uses lambda = 1/(1+r) <= 1.
+    If r < 0, this scaling fails, and an American call CAN have a strict 
+    early exercise premium.
+    """
+
+    model = BinomialStockModel(s0=10.0, u=1.1, d=0.8, r=-0.1)
+    payoff = EuropeanCall(strike=9.0)
+    n_periods = 2
+    
+    res_am = AmericanEngine().price(model, payoff, n_periods)
+    res_eu = ReducedStateEngine().price(model, payoff, n_periods)
+    
+    assert res_am.v0 > res_eu.v0 + 1e-9
+    
+    assert any(c > 1e-9 for c in res_am.consumption_grid.values())
