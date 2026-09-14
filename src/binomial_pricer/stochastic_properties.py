@@ -1,4 +1,5 @@
 import math
+from itertools import product
 from typing import Any
 from .probability_space import CoinTossSpace
 
@@ -110,3 +111,66 @@ def is_markov(space: CoinTossSpace, process: list[dict[str, Any]]) -> bool:
                         return False
                         
     return True
+
+def is_stopping_time(space: CoinTossSpace, tau: dict[str, float]) -> bool:
+    """
+    Verifies if an exercise rule tau is a valid stopping time.
+    Uses Definition 4.3.1: if tau(omega) = n, then tau(omega') = n 
+    for all omega' sharing the first n tosses.
+    """
+    omega_list = space.get_omega()
+    for w in omega_list:
+        t_val = tau[w]
+        if t_val == float('inf'):
+            continue
+            
+        n = int(t_val)
+        if n > space.n_periods or n < 0:
+            raise ValueError(f"Stopping time must be between 0 and N={space.n_periods} or infinity.")
+            
+        prefix = w[:n]
+        for w2 in omega_list:
+            if w2.startswith(prefix):
+                if tau[w2] != t_val:
+                    return False
+                    
+    return True
+
+def stop_process(process: list[dict[str, float]], tau: dict[str, float]) -> list[dict[str, float]]:
+    """
+    Returns the stopped process Y_{n^tau} given a stochastic process Y_n and an exercise rule tau.
+    Evaluates the process at the time index min(n, tau). Uses the shorthand n^tau = min(n, tau) (Section 4.3).
+    """
+    N = len(process) - 1
+    stopped_process = []
+    
+    for n in range(N + 1):
+        level_dict = {}
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        
+        for prefix in prefixes:
+            continuations = [""] if n == N else ["".join(seq) for seq in product("HT", repeat=N-n)]
+            
+            first_val = None
+            for cont in continuations:
+                w = prefix + cont
+                t_val = tau[w]
+                t = int(t_val) if t_val != float('inf') else n
+                
+                stop_time = min(n, t)
+                stop_prefix = w[:stop_time]
+                w_val = process[stop_time][stop_prefix]
+                
+                if first_val is None:
+                    first_val = w_val
+                else:
+                    if not math.isclose(first_val, w_val, rel_tol=1e-9, abs_tol=1e-9):
+                        raise ValueError(
+                            f"Stopped process is not adapted at prefix '{prefix}'. "
+                            "This occurs because the provided rule tau looks into the future in a way "
+                            "that prevents the stopped process from being evaluated using only current information."
+                        )
+            level_dict[prefix] = first_val
+        stopped_process.append(level_dict)
+        
+    return stopped_process

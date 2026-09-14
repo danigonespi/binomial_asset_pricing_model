@@ -6,21 +6,9 @@ from binomial_pricer.equity_model import BinomialStockModel
 from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward, DelayedAsianOption, Payoff
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
 from binomial_pricer.probability_space import CoinTossSpace
-from binomial_pricer.stochastic_properties import is_martingale, is_markov
-from binomial_pricer.state_prices import (
-    radon_nikodym_derivative,
-    state_price_density,
-    price_via_state_prices,
-    radon_nikodym_process,
-    state_price_density_process,
-    price_step_via_state_density_process,
-)
-from binomial_pricer.optimal_investment import (
-    LogUtility,
-    PowerUtility,
-    solve_optimal_investment,
-    solve_goal_probability_maximization
-)
+from binomial_pricer.stochastic_properties import is_martingale, is_markov, is_submartingale, is_supermartingale, is_stopping_time, stop_process
+from binomial_pricer.state_prices import radon_nikodym_derivative, state_price_density, price_via_state_prices, radon_nikodym_process, state_price_density_process, price_step_via_state_density_process
+from binomial_pricer.optimal_investment import LogUtility, PowerUtility, solve_optimal_investment, solve_goal_probability_maximization
 from binomial_pricer.american_engine import AmericanEngine
 
 def test_example_1_1_1(base_model):
@@ -267,6 +255,50 @@ def test_theorem_2_4_5_discounted_wealth_is_martingale(base_model):
 
     assert is_martingale(space, discounted_X)
 
+def test_exercise_2_3_convex_function_of_martingale_is_submartingale():
+    """
+    Exercise 2.3: A convex function (phi(x) = x^2) applied to a martingale 
+    results in a submartingale.
+    """
+    space = CoinTossSpace(n_periods=3, p=0.5)
+    
+    M = []
+    for n in range(4):
+        if n == 0:
+            M.append({"": 0.0})
+        else:
+            M.append({ "".join(seq): sum(1.0 if c == 'H' else -1.0 for c in seq)
+                       for seq in product("HT", repeat=n) })
+
+    phi_M = []
+    for n in range(4):
+        phi_M.append({path: val**2 for path, val in M[n].items()})
+
+    assert is_submartingale(space, phi_M)
+    assert not is_martingale(space, phi_M)  
+
+def test_exercise_2_4_geometric_symmetric_random_walk():
+    """
+    Exercise 2.4(ii): Verifies that the normalized geometric symmetric 
+    random walk is a martingale.
+    """
+    space = CoinTossSpace(n_periods=3, p=0.5)
+    sigma = 0.5
+    normalization = 2.0 / (math.exp(sigma) + math.exp(-sigma))
+
+    process = []
+    for n in range(4):
+        if n == 0:
+            process.append({"": 1.0})
+        else:
+            S_n = {}
+            for seq in product("HT", repeat=n):
+                path = "".join(seq)
+                M_n = sum(1.0 if c == 'H' else -1.0 for c in path)
+                S_n[path] = math.exp(sigma * M_n) * (normalization ** n)
+            process.append(S_n)
+
+    assert is_martingale(space, process)
 
 def test_exercise_2_8_risk_neutral_pricing_formula(base_model):
     """
@@ -702,3 +734,81 @@ def test_exercise_4_1_put_call_straddle():
     v0_straddle = engine.price(model, StraddlePayoff(strike=4.0), n_periods=3).v0
     
     assert v0_straddle < v0_put + v0_call
+
+def test_example_4_2_1_stopped_processes(base_model):
+    """
+    Example 4.2.1 continued (p. 97-100).
+    Evaluates stopping the discounted stock price M_n and the discounted 
+    American put price Y_n at stopping time tau and non-stopping time rho.
+    """
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=2, p=p_tilde)
+    
+    tau = {"HH": float('inf'), "HT": 2.0, "TH": 1.0, "TT": 1.0}
+    rho = {"HH": 0.0, "HT": 0.0, "TH": 1.0, "TT": 2.0}
+    
+    assert is_stopping_time(space, tau)
+    assert not is_stopping_time(space, rho)
+    
+    M = []
+    for n in range(3):
+        level = {}
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for p in prefixes:
+            s_n = base_model.price_path(p)[-1]
+            level[p] = ((4.0/5.0) ** n) * s_n
+        M.append(level)
+        
+    assert is_martingale(space, M)
+    
+    M_tau = stop_process(M, tau)
+    assert M_tau[1]["H"] == pytest.approx(6.40)
+    assert M_tau[2]["TH"] == pytest.approx(1.60)
+    assert M_tau[2]["TT"] == pytest.approx(1.60)
+    assert is_martingale(space, M_tau)
+    
+    M_rho = stop_process(M, rho)
+    assert not is_martingale(space, M_rho)
+    
+    engine = AmericanEngine()
+    res = engine.price(base_model, EuropeanPut(strike=5.0), n_periods=2)
+    
+    Y = []
+    for n in range(3):
+        level = {}
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for p in prefixes:
+            s_n = base_model.price_path(p)[-1]
+            v = res.value_grid[(n, s_n)]
+            level[p] = ((4.0/5.0) ** n) * v
+        Y.append(level)
+        
+    assert is_supermartingale(space, Y)
+    assert not is_martingale(space, Y)
+    
+    Y_tau = stop_process(Y, tau)
+    assert Y_tau[2]["HH"] == pytest.approx(0.0)
+    assert Y_tau[2]["HT"] == pytest.approx(0.64)
+    assert Y_tau[2]["TH"] == pytest.approx(2.40)
+    assert Y_tau[2]["TT"] == pytest.approx(2.40)
+    assert is_martingale(space, Y_tau)
+
+
+def test_exercise_4_4_insider_payoff():
+    """
+    Exercise 4.4: Insider payoff under rho has a higher risk-neutral expectation (1.74)
+    than the standard American put price (1.36).
+    """
+    space = CoinTossSpace(n_periods=2, p=0.5)
+    
+    rho = {"HH": 0.0, "HT": 0.0, "TH": 1.0, "TT": 2.0}
+    Y_payoff = {"HH": 1.0, "HT": 1.0, "TH": 3.0, "TT": 4.0}
+    
+    expected_val = 0.0
+    for w in space.get_omega():
+        prob = space.probability(w)
+        discount = (4.0/5.0) ** rho[w]
+        expected_val += prob * discount * Y_payoff[w]
+        
+    assert expected_val == pytest.approx(1.74)
+    assert expected_val > 1.36

@@ -2,12 +2,7 @@ import pytest
 import math
 from itertools import product
 from binomial_pricer.probability_space import CoinTossSpace
-from binomial_pricer.stochastic_properties import (
-    is_martingale, 
-    is_markov, 
-    is_submartingale, 
-    is_supermartingale
-)
+from binomial_pricer.stochastic_properties import is_martingale, is_markov, is_submartingale, is_supermartingale, is_stopping_time, stop_process
 
 def test_martingale_validation_rejects_wrong_length():
     space = CoinTossSpace(n_periods=3, p=0.5)
@@ -45,49 +40,51 @@ def test_submartingale_and_supermartingale_validation():
     assert is_supermartingale(space, supermartingale)
     assert not is_submartingale(space, supermartingale)
 
+def test_constant_tau_is_stopping_time():
+    """A rule that always stops at a fixed time k is a trivial stopping time."""
+    space = CoinTossSpace(n_periods=3, p=0.5)
+    for k in range(4):
+        tau = {w: float(k) for w in space.get_omega()}
+        assert is_stopping_time(space, tau)
+        
+def test_anticipating_tau_is_not_stopping_time():
+    """A rule that looks ahead breaks the non-anticipating condition of Definition 4.3.1."""
+    space = CoinTossSpace(n_periods=2, p=0.5)
+    # At time 1, 'H' stops if the future is 'H' but continues if the future is 'T'.
+    tau = {"HH": 1.0, "HT": 2.0, "TH": 0.0, "TT": 0.0}
+    assert not is_stopping_time(space, tau)
 
-def test_exercise_2_3_convex_function_of_martingale_is_submartingale():
-    """
-    Exercise 2.3: A convex function (phi(x) = x^2) applied to a martingale 
-    results in a submartingale.
-    """
+def test_stopped_martingale_is_martingale():
+    """Theorem 4.3.2 (Part I): A martingale stopped at a stopping time is a martingale."""
     space = CoinTossSpace(n_periods=3, p=0.5)
     
-    M = []
-    for n in range(4):
-        if n == 0:
-            M.append({"": 0.0})
-        else:
-            M.append({ "".join(seq): sum(1.0 if c == 'H' else -1.0 for c in seq)
-                       for seq in product("HT", repeat=n) })
-
-    phi_M = []
-    for n in range(4):
-        phi_M.append({path: val**2 for path, val in M[n].items()})
-
-    assert is_submartingale(space, phi_M)
-    assert not is_martingale(space, phi_M)  
-
-
-def test_exercise_2_4_geometric_symmetric_random_walk():
-    """
-    Exercise 2.4(ii): Verifies that the normalized geometric symmetric 
-    random walk is a martingale.
-    """
-    space = CoinTossSpace(n_periods=3, p=0.5)
-    sigma = 0.5
-    normalization = 2.0 / (math.exp(sigma) + math.exp(-sigma))
-
     process = []
     for n in range(4):
-        if n == 0:
-            process.append({"": 1.0})
-        else:
-            S_n = {}
-            for seq in product("HT", repeat=n):
-                path = "".join(seq)
-                M_n = sum(1.0 if c == 'H' else -1.0 for c in path)
-                S_n[path] = math.exp(sigma * M_n) * (normalization ** n)
-            process.append(S_n)
+        level = {}
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        for p in prefixes:
+            level[p] = sum(1.0 if c == 'H' else -1.0 for c in p)
+        process.append(level)
+        
+    tau = {"HHH": 1.0, "HHT": 1.0, "HTH": 1.0, "HTT": 1.0, 
+           "THH": 2.0, "THT": 2.0, "TTH": 3.0, "TTT": 3.0}
+           
+    assert is_stopping_time(space, tau)
+    stopped = stop_process(process, tau)
+    assert is_martingale(space, stopped)
 
-    assert is_martingale(space, process)
+def test_stopped_supermartingale_is_supermartingale():
+    """Theorem 4.3.2 (Part I): A supermartingale stopped at a stopping time is a supermartingale."""
+    space = CoinTossSpace(n_periods=2, p=0.5)
+    
+    process = [
+        {"": 0.0},
+        {"H": -1.0, "T": -3.0},
+        {"HH": -2.0, "HT": -4.0, "TH": -4.0, "TT": -6.0}
+    ]
+    
+    tau = {"HH": 1.0, "HT": 1.0, "TH": float('inf'), "TT": float('inf')}
+    assert is_stopping_time(space, tau)
+    
+    stopped = stop_process(process, tau)
+    assert is_supermartingale(space, stopped)
