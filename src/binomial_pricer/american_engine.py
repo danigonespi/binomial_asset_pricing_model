@@ -21,10 +21,14 @@ class AmericanEngine:
         Calculates the arbitrage-free price, the hedge, and the consumption process 
         for an American derivative using backward induction through state space reduction.
 
-        Applies Eq. (4.2.5) for terminal values, Eq. (4.2.6) for the recursive
-        risk-neutral value (including the early exercise premium),
-        Eq. (4.2.7) for Delta, and Eq. (4.2.8) for the non-negative consumption.
+        Applies Eq. (4.2.5)/(4.4.10) for terminal values, Eq. (4.2.6)/(4.4.11) for
+        the recursive risk-neutral value (including the early exercise premium),
+        Eq. (4.2.7)/(4.4.14) for Delta, and Eq. (4.2.8)/(4.4.15) for the non-negative
+        consumption -- the Section 4.2 numbers for path-independent payoffs (g(s)),
+        the Section 4.4 numbers for path-dependent payoffs (G_n via terminal_value
+        evaluated at every node, not just at N).
         """
+        
         value_grid = {}
         delta_grid = {}
         consumption_grid = {}
