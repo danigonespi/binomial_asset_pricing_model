@@ -1,8 +1,9 @@
 import pytest
 import math
 from itertools import product
+import numpy as np
 from binomial_pricer.equity_model import BinomialStockModel
-from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward, DelayedAsianOption
+from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward, DelayedAsianOption, Payoff
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
 from binomial_pricer.probability_space import CoinTossSpace
 from binomial_pricer.stochastic_properties import is_martingale, is_markov
@@ -20,6 +21,7 @@ from binomial_pricer.optimal_investment import (
     solve_optimal_investment,
     solve_goal_probability_maximization
 )
+from binomial_pricer.american_engine import AmericanEngine
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -651,3 +653,52 @@ def test_exercise_3_9_goal_probability():
     values = list(x_n_dict.values())
     assert values.count(10.0) == 2
     assert values.count(0.0) == 2
+
+def test_example_4_2_1_american_put():
+    """
+    Example 4.2.1: Two-period American put, strike 5, S0=4, u=2, d=0.5, r=0.25.
+    v2(16)=0, v2(4)=1, v2(1)=4.
+    v1(8)=0.40, v1(2)=3 (early exercise here).
+    v0(4)=1.36, delta0 ~ -0.4333.
+    Consumption at (1, 2) is 1.0.
+    """
+    model = BinomialStockModel(s0=4.0, u=2.0, d=0.5, r=0.25)
+    payoff = EuropeanPut(strike=5.0)  
+    
+    engine = AmericanEngine()
+    res = engine.price(model, payoff, n_periods=2)
+    
+    assert res.value_grid[(2, 16.0)] == pytest.approx(0.0)
+    assert res.value_grid[(2, 4.0)] == pytest.approx(1.0)
+    assert res.value_grid[(2, 1.0)] == pytest.approx(4.0)
+    
+    assert res.value_grid[(1, 8.0)] == pytest.approx(0.40)
+    assert res.value_grid[(1, 2.0)] == pytest.approx(3.0)
+    
+    assert res.value_grid[(0, 4.0)] == pytest.approx(1.36)
+    assert res.delta0 == pytest.approx(-13.0 / 30.0, rel=1e-3)
+    
+    assert res.consumption_grid[(1, 2.0)] == pytest.approx(1.0)
+
+
+def test_exercise_4_1_put_call_straddle():
+    """
+    Exercise 4.1: Compare American Straddle with sum of American Call + Put.
+    S0=4, u=2, d=0.5, r=0.25, N=3.
+    V0^S < V0^P + V0^C
+    """
+    model = BinomialStockModel(s0=4.0, u=2.0, d=0.5, r=0.25)
+    
+    class StraddlePayoff(Payoff):
+        def __init__(self, strike: float):
+            self.strike = strike
+        def compute(self, path: np.ndarray) -> float:
+            return max(self.strike - path[-1], 0.0) + max(path[-1] - self.strike, 0.0)
+    
+    engine = AmericanEngine()
+    
+    v0_put = engine.price(model, EuropeanPut(strike=4.0), n_periods=3).v0
+    v0_call = engine.price(model, EuropeanCall(strike=4.0), n_periods=3).v0
+    v0_straddle = engine.price(model, StraddlePayoff(strike=4.0), n_periods=3).v0
+    
+    assert v0_straddle < v0_put + v0_call
