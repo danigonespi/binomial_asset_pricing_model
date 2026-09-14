@@ -143,3 +143,34 @@ class DelayedAsianOption(PathDependentPayoff):
         if n_terms <= 0:
             return 0.0
         return max(final_sum / n_terms - self.strike, 0.0)
+
+class RunningAveragePut(PathDependentPayoff):
+    """
+    Put option on the running average price: max(K - 1/(n+1) sum_{j=0}^n S_j, 0).
+    Required for Exercise 4.3.
+    
+    Design Note: The engine's `terminal_value` hook does not receive the 
+    current step `n`. To evaluate the intrinsic value dynamically at every 
+    node without altering the existing API signatures (which would break 
+    compatibility with Chapters 1-3), we store `n` directly inside the 
+    aggregate state as a tuple: (n_step, running_sum).
+    """
+    def __init__(self, strike: float):
+        self.strike = strike
+
+    def initial_aggregate(self, s0: float) -> tuple[int, float]:
+        """At step 0, n=0 and the running sum is exactly S_0."""
+        return (0, s0)
+
+    def update_aggregate(self, aggregate: tuple[int, float], s_next: float) -> tuple[int, float]:
+        """Increments the step counter and adds to the running sum."""
+        n_step, current_sum = aggregate
+        return (n_step + 1, current_sum + s_next)
+
+    def terminal_value(self, s_final: float, aggregate_final: tuple[int, float]) -> float:
+        """
+        Evaluates the intrinsic value at whatever step n the engine is currently at.
+        The denominator for the average is n + 1 (since it starts at 0).
+        """
+        n_step, running_sum = aggregate_final
+        return max(self.strike - running_sum / (n_step + 1), 0.0)

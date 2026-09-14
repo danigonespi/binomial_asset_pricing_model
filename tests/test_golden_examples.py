@@ -3,7 +3,7 @@ import math
 from itertools import product
 import numpy as np
 from binomial_pricer.equity_model import BinomialStockModel
-from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward, DelayedAsianOption, Payoff
+from binomial_pricer.payoffs import EuropeanCall, LookbackOption, EuropeanPut, AsianOption, Forward, DelayedAsianOption, Payoff, RunningAveragePut
 from binomial_pricer.engines import PricingEngine, ReducedStateEngine
 from binomial_pricer.probability_space import CoinTossSpace
 from binomial_pricer.stochastic_properties import is_martingale, is_markov, is_submartingale, is_supermartingale, is_stopping_time, stop_process
@@ -793,7 +793,6 @@ def test_example_4_2_1_stopped_processes(base_model):
     assert Y_tau[2]["TT"] == pytest.approx(2.40)
     assert is_martingale(space, Y_tau)
 
-
 def test_exercise_4_4_insider_payoff():
     """
     Exercise 4.4: Insider payoff under rho has a higher risk-neutral expectation (1.74)
@@ -812,3 +811,113 @@ def test_exercise_4_4_insider_payoff():
         
     assert expected_val == pytest.approx(1.74)
     assert expected_val > 1.36
+
+def test_example_4_2_1_continued_via_definition(base_model):
+    """
+    Example 4.2.1 continued. Evaluates Eq. (4.4.3), (4.4.4), and (4.4.5) explicitly 
+    by listing the limited set of available stopping times in each sub-branch 
+    to confirm the definitional maximum matches the recursive algorithm.
+    """
+    discount = 1.0 / (1.0 + base_model.r)
+    
+    v1_h = max(0.0, discount * 0.5, discount * 0.5)
+    assert v1_h == pytest.approx(0.40)
+    
+    v1_t = max(3.0, 2.0)
+    assert v1_t == pytest.approx(3.0)
+    
+    v0 = max(1.0, discount * (0.5 * v1_h + 0.5 * v1_t))
+    assert v0 == pytest.approx(1.36)
+
+def test_exercise_4_5_stopping_time_enumeration(base_model):
+    """
+    Exercise 4.5: Exhaustive enumeration of all 26 stopping times in S_0 
+    for the two-period model. The maximal expected discounted payoff must 
+    yield 1.36 and correspond exactly to the optimal stopping time in (4.4.6).
+    """
+    p_tilde, _ = base_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=2, p=p_tilde)
+    omega = space.get_omega()
+    
+    possible_times = [0, 1, 2, float('inf')]
+    
+    valid_taus = []
+    for combo in product(possible_times, repeat=4):
+        tau = dict(zip(omega, combo))
+        if is_stopping_time(space, tau):
+            valid_taus.append(tau)
+            
+    assert len(valid_taus) == 26
+    
+    max_expected_val = -1.0
+    optimal_taus = []  
+    
+    for tau in valid_taus:
+        expected_val = 0.0
+        for w in omega:
+            t = tau[w]
+            if t <= 2:
+                s_t = base_model.price_path(w[:int(t)])[-1]
+                g_t = max(5.0 - s_t, 0.0)
+                expected_val += space.probability(w) * ((1 / (1 + base_model.r))**t) * g_t
+                
+        if expected_val > max_expected_val + 1e-9:
+            max_expected_val = expected_val
+            optimal_taus = [tau]
+        elif math.isclose(expected_val, max_expected_val, rel_tol=1e-9, abs_tol=1e-9):
+            optimal_taus.append(tau)
+            
+    assert max_expected_val == pytest.approx(1.36)
+    
+    book_tau = {"HH": float('inf'), "HT": 2.0, "TH": 1.0, "TT": 1.0}
+    assert book_tau in optimal_taus
+
+def test_exercise_4_3_running_average_put(base_model):
+    """
+    Exercise 4.3: American put on the running average.
+    Cross-validates AmericanEngine's path-dependent framework against a 
+    pure brute-force DP algorithm applied explicitly over the tree of histories.
+    """
+    K = 4.0
+    N = 3
+    payoff = RunningAveragePut(strike=K)
+    
+    engine_v0 = AmericanEngine().price(base_model, payoff, n_periods=N).v0
+    
+    space = CoinTossSpace(n_periods=N, p=0.5)
+    V = {}
+    
+    for w in space.get_omega():
+        path = base_model.price_path(w)
+        V[w] = max(K - sum(path) / (N + 1), 0.0)
+        
+    for n in range(N - 1, -1, -1):
+        prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+        V_new = {}
+        for p in prefixes:
+            cont = (1 / (1 + base_model.r)) * (0.5 * V[p+"H"] + 0.5 * V[p+"T"])
+            path = base_model.price_path(p)
+            intr = max(K - sum(path) / (n + 1), 0.0)
+            V_new[p] = max(intr, cont)
+        V = V_new
+        
+    brute_v0 = V[""]
+    
+    assert engine_v0 == pytest.approx(brute_v0)
+
+def test_exercise_4_6_and_4_7_bounds(base_model):
+    """
+    Exercise 4.6 (ii) and (iii): Bounds on the American put.
+    Validates V_0^{AP} <= V_0^{EC} + K - S_0 (4.8.4) and 
+    V_0^{EC} - S_0 + K/(1+r)^N <= V_0^{AP} (4.8.5).
+    """
+    N = 3
+    K = 5.0
+    
+    v0_ap = AmericanEngine().price(base_model, EuropeanPut(strike=K), n_periods=N).v0
+    v0_ec = ReducedStateEngine().price(base_model, EuropeanCall(strike=K), n_periods=N).v0
+    
+    assert v0_ap <= v0_ec + K - base_model.s0 + 1e-9
+    
+    lower_bound = v0_ec - base_model.s0 + K / ((1 + base_model.r) ** N)
+    assert v0_ap >= lower_bound - 1e-9

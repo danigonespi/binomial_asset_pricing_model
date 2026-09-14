@@ -2,7 +2,7 @@ import pytest
 import math
 from itertools import product
 from binomial_pricer.equity_model import BinomialStockModel
-from binomial_pricer.payoffs import EuropeanPut, EuropeanCall
+from binomial_pricer.payoffs import EuropeanPut, EuropeanCall, RunningAveragePut, LookbackOption
 from binomial_pricer.engines import ReducedStateEngine
 from binomial_pricer.american_engine import AmericanEngine
 from binomial_pricer.probability_space import CoinTossSpace
@@ -96,3 +96,64 @@ def test_american_engine_long_position_inverts_delta(arbitrary_model):
     
     for state, delta in res_short.delta_grid.items():
         assert res_long.delta_grid[state] == pytest.approx(-delta)
+
+def test_american_path_dependent_properties(arbitrary_model):
+    """
+    Validates Theorem 4.4.2 properties for path-dependent American options.
+    Evaluates both a RunningAveragePut and a LookbackOption.
+    """
+    payoffs = [
+        RunningAveragePut(strike=10.0),
+        LookbackOption()
+    ]
+    n_periods = 3
+    p_tilde, _ = arbitrary_model.risk_neutral_prob
+    space = CoinTossSpace(n_periods=n_periods, p=p_tilde)
+    
+    for payoff in payoffs:
+        am_res = AmericanEngine().price(arbitrary_model, payoff, n_periods)
+        eu_res = ReducedStateEngine().price(arbitrary_model, payoff, n_periods)
+        
+        for state, v in am_res.value_grid.items():
+            s = state[1]
+            m = state[2] if len(state) > 2 else None
+            g_s = payoff.terminal_value(s, m)
+            assert v >= max(g_s, 0.0) - 1e-9
+            
+        process = []
+        for n in range(n_periods + 1):
+            level = {}
+            prefixes = [""] if n == 0 else ["".join(seq) for seq in product("HT", repeat=n)]
+            for p in prefixes:
+                prices = arbitrary_model.price_path(p)
+                s = prices[-1]
+                m = payoff.initial_aggregate(arbitrary_model.s0)
+                for step_s in prices[1:]:
+                    m = payoff.update_aggregate(m, step_s)
+                
+                target_state_key = None
+                for key in am_res.value_grid.keys():
+                    if key[0] == n and math.isclose(key[1], s, rel_tol=1e-9):
+                        key_m = key[2] if len(key) > 2 else None
+                        
+                        if m is None and key_m is None:
+                            target_state_key = key
+                            break
+                        elif m is not None and key_m is not None:
+                            if isinstance(m, tuple) and isinstance(key_m, tuple):
+                                if len(m) == len(key_m) and all(math.isclose(a, b, rel_tol=1e-9) if isinstance(a, float) else a == b for a, b in zip(m, key_m)):
+                                    target_state_key = key
+                                    break
+                            elif math.isclose(key_m, m, rel_tol=1e-9):
+                                target_state_key = key
+                                break
+                                
+                assert target_state_key is not None, f"State not found for n={n}, s={s}, m={m}"
+                
+                v = am_res.value_grid[target_state_key]
+                level[p] = v / ((1 + arbitrary_model.r) ** n)
+            process.append(level)
+            
+        assert is_supermartingale(space, process)
+        
+        assert am_res.v0 >= eu_res.v0 - 1e-9
