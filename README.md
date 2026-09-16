@@ -29,14 +29,22 @@ The probabilistic machinery underlying Chapter 1's pricing formulas is now forma
 * **Capital Asset Pricing:** Decouples optimal investment into a static Lagrangian constraint over terminal wealth states followed by standard replication. Implements exact closed-form solvers for the Logarithmic and Power utilities, a generic `scipy.optimize.brentq` solver for the general non-linear case, and a dedicated threshold-based solver for the non-differentiable Goal (probability-maximization) utility of Exercise 3.9, whose step-function marginal utility cannot be inverted continuously (Section 3.3).
 * **Cross-Validation:** Golden examples guarantee numeric adherence between the generic `brentq` optimal-inversion algorithm and the closed-form Power-utility solution (Exercise 3.7); the closed-form Logarithmic-utility solution is validated independently via Example 3.3.2.
 
+### Chapter 4 — American Derivative Securities
+
+* **Early-Exercise Architecture:** Implementation of `AmericanEngine`, extending the backward-induction algorithm to handle early-exercise decisions. It reuses the state-reduction mechanics (e.g., evaluating $(S_n, M_n)$ or $(S_n, Y_n)$) while substituting the plain risk-neutral expectation with the maximum against the intrinsic value at every node.
+* **The Consumption Process:** The engine computes the nonnegative consumption process ($C_n$), explicitly tracking the capital withdrawn from the replicating portfolio when early exercise is strictly optimal, keeping the hedge self-financing.
+* **Stopping Times & Optional Sampling:** `stochastic_properties.py` introduces `is_stopping_time` to validate non-anticipating exercise policies and `stop_process` to freeze processes dynamically. Validates the Optional Sampling Theorem, demonstrating computationally that while the discounted American price is a supermartingale, stopping it at the optimal exercise time turns it into a martingale.
+* **Path-Dependent Extensions:** Introduces `RunningAveragePut` to demonstrate the algorithm's capability to price path-dependent American options (Exercise 4.3) using generalized intrinsic value tracking ($G_n$).
+* **Theorem Validation:** Computationally validates Theorem 4.5.1 across a full strike curve, proving the early-exercise premium for an American call on a non-dividend-paying stock is strictly zero. Automatically maps the multi-period early-exercise boundary (the critical stock price curve) for American puts.
+
 ## Repository Structure
 
 The codebase is organized to clearly separate mathematical theory from implementation and testing:
 
-* **`docs/theory/`**: Theoretical notes in Markdown format. Chapter 1 covers the one-period and multi-period models, computational state reduction, and Asian options (`01`–`04`). Chapter 2 covers finite probability spaces, conditional expectations, martingales, and Markov processes (`05`–`08`). Chapter 3 covers the static and dynamic change of measure and capital asset pricing (`09`–`11`).
-* **`src/binomial_pricer/`**: Main source code. Contains the model classes, the tree generator (`lattice.py`), the payoff hierarchy (`payoffs.py`), the pricing engines (`engines.py`), the finite probability space (`probability_space.py`), the martingale/Markov validators (`stochastic_properties.py`), the state price density and its process (`state_prices.py`), and the optimal-investment utility solvers (`optimal_investment.py`).
-* **`tests/`**: Unit and integration testing suite validating correct model instantiation, payoff evaluation, algorithmic efficiency of the engines, and the probabilistic properties (martingale, submartingale, supermartingale, Markov) formalized in Chapter 2.
-* **`shreve_v1_notebook.ipynb`**: Jupyter Notebook for model analysis, sensitivity studies, and visualization, covering both the deterministic core of Chapter 1, the probabilistic formalization of Chapter 2 and the state-price / optimal-investment machinery of Chapter 3.
+* **`docs/theory/`**: Theoretical notes in Markdown format. Chapter 1 covers the one-period and multi-period models, computational state reduction, and Asian options (`01`–`04`). Chapter 2 covers finite probability spaces, conditional expectations, martingales, and Markov processes (`05`–`08`). Chapter 3 covers the static and dynamic change of measure and capital asset pricing (`09`–`11`). Chapter 4 covers non-path-dependent American derivatives, stopping times, general path-dependent American derivatives, and American call options (`12`–`15`).
+* **`src/binomial_pricer/`**: Main source code. Contains the model classes, the tree generator (`lattice.py`), the payoff hierarchy (`payoffs.py`), the European pricing engines (`engines.py`), the American early-exercise solver (`american_engine.py`), the finite probability space (`probability_space.py`), the martingale/Markov/stopping-time validators (`stochastic_properties.py`), the state price density and its process (`state_prices.py`), and the optimal-investment utility solvers (`optimal_investment.py`).
+* **`tests/`**: Unit and integration testing suite validating correct model instantiation, payoff evaluation, algorithmic efficiency of the engines, the probabilistic properties formalization, and the American early-exercise policies.
+* **`shreve_v1_notebook.ipynb`**: Jupyter Notebook for model analysis, sensitivity studies, and visualization, covering the deterministic core of Chapter 1, the probabilistic formalization of Chapter 2, the state-price / optimal-investment machinery of Chapter 3, and the American derivatives/stopping times mechanics of Chapter 4.
 
 ## Requirements and Usage
 
@@ -50,8 +58,3 @@ pytest tests/
 
 # Run tests with detailed output
 pytest tests/ -v
-```
-
-## License
-
-Released under the MIT License — see [LICENSE](LICENSE).
