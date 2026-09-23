@@ -10,6 +10,7 @@ from binomial_pricer.stochastic_properties import is_martingale, is_markov, is_s
 from binomial_pricer.state_prices import radon_nikodym_derivative, state_price_density, price_via_state_prices, radon_nikodym_process, state_price_density_process, price_step_via_state_density_process
 from binomial_pricer.optimal_investment import LogUtility, PowerUtility, solve_optimal_investment, solve_goal_probability_maximization
 from binomial_pricer.american_engine import AmericanEngine
+from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, first_passage_time_mgf, first_passage_time_distribution
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -952,3 +953,58 @@ def test_example_4_2_1_put_premium_vs_call(base_model):
     
     for c in am_call_res.consumption_grid.values():
         assert c == pytest.approx(0.0)
+
+def test_page_126_explicit_tau_1_probabilities():
+    """
+    Explicit probabilities on page 126 for reaching level 1:
+    P{tau_1 = 1} = 1/2
+    P{tau_1 = 3} = 1/8
+    P{tau_1 = 5} = 1/16
+    
+    Verified via closed-form formula (Route 1) AND brute-force counting over Omega (Route 2).
+    """
+    p_1 = first_passage_time_distribution(j=1, p=0.5)  # tau_1 = 1 => 2j-1 = 1 => j = 1
+    p_3 = first_passage_time_distribution(j=2, p=0.5)  # tau_1 = 3 => 2j-1 = 3 => j = 2
+    p_5 = first_passage_time_distribution(j=3, p=0.5)  # tau_1 = 5 => 2j-1 = 5 => j = 3
+    
+    assert p_1 == pytest.approx(1/2)
+    assert p_3 == pytest.approx(1/8)
+    assert p_5 == pytest.approx(1/16)
+    
+    space = CoinTossSpace(n_periods=5, p=0.5)
+    count_1, count_3, count_5 = 0, 0, 0
+    
+    for w in space.get_omega():
+        path = symmetric_random_walk_path(w)
+        tau = first_passage_time(path, 1)
+        if tau == 1:
+            count_1 += 1
+        elif tau == 3:
+            count_3 += 1
+        elif tau == 5:
+            count_5 += 1
+            
+    prob_1 = count_1 / 32.0
+    prob_3 = count_3 / 32.0
+    prob_5 = count_5 / 32.0
+    
+    assert prob_1 == pytest.approx(1/2)
+    assert prob_3 == pytest.approx(1/8)
+    assert prob_5 == pytest.approx(1/16)
+
+def test_exercise_5_1_multiplicative_property_mgf_for_american_put():
+    """
+    Exercise 5.1 / Eq. (5.7.1) evaluated at exact values m=2 and alpha=4/5.
+    This serves as a preview to Section 5.4 (Perpetual American Put), where alpha = 1 / (1+r).
+    
+    Double-verifies the algorithmic evaluation against a manual paper-computed fraction.
+    """
+    m = 2
+    alpha = 4.0 / 5.0
+    
+    val_m2 = first_passage_time_mgf(alpha, m)
+    
+    val_m1_squared = first_passage_time_mgf(alpha, 1) ** 2
+    
+    assert math.isclose(val_m2, val_m1_squared, abs_tol=1e-9)
+    assert val_m2 == pytest.approx(1.0 / 4.0)

@@ -1,105 +1,114 @@
-## 1. Concept and Context
+## 1. Concept and context
 
-* **Combinatoric Proof of First Passage Times** (Section 5.3, pp. 126–129):
-  * Section 5.3 presents a second, purely combinatorics-based proof of Theorem 5.2.5 (the distribution of the first passage time $\tau_1$) using the **reflection principle** [p. 127].
-  * Rather than relying on moment-generating functions and power series expansions as in Section 5.2, the reflection principle provides a geometric path-counting argument: every path that reaches a target level before a final time but ends below it corresponds bijectively to a "reflected" path that ends above the target level [pp. 127–128].
-  * Shreve explicitly notes that this same geometric reflection technique serves as the foundational idea for analyzing Brownian motion and deriving analytical pricing formulas for exotic options (such as barrier and lookback options) in Chapter 7 of Volume II [p. 127].
+Section 5.3 gives a second, purely combinatorial proof of Theorem 5.2.5 (the
+distribution of the first passage time $\tau_1$, established via
+moment-generating functions in the previous card). The reflection principle
+provides a geometric path-counting argument instead: every path that reaches
+level 1 by a given time but ends below it corresponds bijectively to a
+"reflected" path that ends above level 1. The book notes that this same
+reflection idea will be reused later in the study of Brownian motion
+(Section 5.3, p. 127).
 
----
+## 2. Formal definitions
 
-## 2. Formal Definitions
+* **Reflected path**: for a path $M_0,\dots,M_{2j-1}$ that reaches level 1
+  at some first passage time $\tau_1\le2j-1$, the reflected path keeps the
+  original path up to $\tau_1$ and flips every step afterward (an up-step
+  becomes a down-step and vice versa) (p. 127).
+* **$M_n^*$**: the maximum-to-date process of a random walk $M_k$,
+  $M_n^*=\max_{1\le k\le n}M_k$, introduced in Exercise 5.5 (Eq. 5.7.2).
 
-* **Reflected Path** [p. 127]:
-  * For a random walk path $M_0, M_1, \dots, M_{2j-1}$ that reaches level $1$ at some first passage time $\tau_1 \le 2j-1$, the **reflected path** is constructed by keeping the original path up to time $\tau_1$ and reflecting all subsequent steps about level $1$ (i.e., replacing every subsequent up-step with a down-step and every down-step with an up-step) [p. 127].
+## 3. Key equations
 
-* **Maximum-to-Date Process ($M_n^*$)** [Exercise 5.5, p. 140]:
-  * For a random walk $M_k$, the running maximum process up to time $n$ is defined by:
-    $$M_n^* = \max_{1 \le k \le n} M_k \quad \text{(5.7.2)}$$
+Section 5.3 itself contains no equations numbered by the author — the whole
+section is a prose-and-diagram combinatorial argument that re-derives
+(5.2.22) from the previous card without assigning it a new number. The only
+numbered equation belonging to this card comes from Exercise 5.5:
 
----
+$$M_n^* = \max_{1\le k\le n} M_k \quad \text{(5.7.2)}$$
 
-## 3. Key Equations
+*Unnumbered formulas worked out in the text:* the path-partition identity
 
-* **Author-Numbered Equations in Section 5.3**:
-  * *Note*: Section 5.3 contains **no equations numbered by the author**; all formulas in this section are unnumbered combinatoric path-counting steps that culminate in re-deriving equation **(5.2.22)** from Section 5.2 [pp. 127–128].
+$$\mathbb{P}\{\tau_1\le2j-1\} = \mathbb{P}\{M_{2j-1}=1\} + 2\,\mathbb{P}\{M_{2j-1}\ge3\} = 1-\mathbb{P}\{M_{2j-1}=-1\}$$
 
-* **Author-Numbered Equations in Exercises 5.5**:
-  * **Equation (5.7.2)** — Running Maximum Process Definition:
-    $$M_n^* = \max_{1 \le k \le n} M_k \quad \text{(5.7.2)}$$
+the path count
 
-* **Unnumbered Key Formulas in Section 5.3 & Exercise 5.5**:
-  * Reflection Path Count Identity [p. 128]:
-    $$\mathbb{P}\{\tau_1 \le 2j - 1\} = \mathbb{P}\{M_{2j-1} = 1\} + 2\mathbb{P}\{M_{2j-1} \ge 3\} = 1 - \mathbb{P}\{M_{2j-1} = -1\}$$
-  * Re-derivation of (5.2.22) via Reflection [p. 128]:
-    $$\mathbb{P}\{\tau_1 = 2j - 1\} = \frac{(2j - 2)!}{j!(j - 1)!} \left(\frac{1}{2}\right)^{2j-1}, \quad j = 1, 2, \dots$$
-  * Symmetric Joint Distribution of Walk and Maximum [Exercise 5.5(i), p. 140]:
-    $$\mathbb{P}\{M_n^* \ge m, M_n = b\} = \mathbb{P}\{M_n = 2m - b\} = \frac{n!}{\left(\frac{n-b}{2} + m\right)! \left(\frac{n+b}{2} - m\right)!} \left(\frac{1}{2}\right)^n$$
-  * Asymmetric Joint Distribution of Walk and Maximum [Exercise 5.5(ii), p. 140]:
-    $$\mathbb{P}\{M_n^* \ge m, M_n = b\} = \frac{n!}{\left(\frac{n-b}{2} + m\right)! \left(\frac{n+b}{2} - m\right)!} p^{\frac{n+2m-b}{2}} q^{\frac{n-(2m-b)}{2}}$$
+$$\mathbb{P}\{M_{2j-1}=-1\} = \binom{2j-1}{j}\left(\frac12\right)^{2j-1} = \frac{(2j-1)!}{j!(j-1)!}\left(\frac12\right)^{2j-1}$$
 
----
+and the resulting re-derivation of (5.2.22),
 
-## 4. Assumptions and Domain of Validity
+$$\mathbb{P}\{\tau_1=2j-1\} = \frac{(2j-2)!}{j!(j-1)!}\left(\frac12\right)^{2j-1} \quad (p.\ 128)$$
 
-* **Symmetry Requirement for Direct Path Reflection**:
-  * The direct reflection principle argument relies strictly on a **symmetric random walk** ($p = q = 1/2$), where every path of length $n$ has equal probability $(1/2)^n$, making path counting directly proportional to probability [pp. 127–128].
-  * For an **asymmetric random walk** ($p \ne q$), path reflection cannot be applied directly to probabilities because reflecting a path changes its number of up and down steps (and hence its probability $p^{\#\text{up}} q^{\#\text{down}}$). The asymmetric joint distribution is obtained by weighting the combinatorial path count by the specific path probability $p^{\frac{n+2m-b}{2}} q^{\frac{n-(2m-b)}{2}}$ [Exercise 5.5(ii), p. 140].
+The formula asked for in Exercise 5.5(i) is
 
-* **Domain Restrictions in Exercise 5.5**:
-  * $n$ and $m$ are positive even integers [p. 140].
-  * $b$ is an even integer such that $b \le m$ [p. 140].
-  * Parity and reachability constraints: $m \le n$ and $2m - b \le n$ [p. 140].
+$$\mathbb{P}\{M_n^*\ge m,\, M_n=b\} = \mathbb{P}\{M_n=2m-b\} = \frac{n!}{\left(\frac{n-b}{2}+m\right)!\left(\frac{n+b}{2}-m\right)!}\left(\frac12\right)^n \quad (p.\ 140)$$
 
----
+Part (ii) of that same exercise only asks for the asymmetric analogue of
+this formula and does not supply one — it is an open question, not a
+result given in the text.
 
-## 5. Theorems and Proof Outline
+## 4. Assumptions and domain of validity
 
-Section 5.3 does not introduce a new numbered theorem; it provides a **combinatoric proof of Theorem 5.2.5** (re-deriving formula (5.2.22) for $p=q=1/2$) [pp. 127–128].
+* The direct path-reflection argument requires the symmetric random walk
+  ($p=q=1/2$), where every path of a given length shares the same
+  probability $(1/2)^n$, so counting paths is equivalent to computing
+  probabilities.
+* Exercise 5.5 restricts $n$ and $m$ to even positive integers and $b$ to
+  an even integer with $b\le m$, and requires $m\le n$ and $2m-b\le n$ so
+  that level $m$ and endpoint $b$ are jointly attainable in $n$ steps.
 
-### **Proof Outline of Theorem 5.2.5 via the Reflection Principle** [pp. 127–128]:
+## 5. Theorems and proof outline
 
-1. **Path Partitioning**: Consider $2j - 1$ coin tosses. A path reaches level $1$ by time $2j - 1$ ($\tau_1 \le 2j - 1$) if and only if it falls into one of three mutually exclusive categories at final time $2j - 1$:
-   * It ends exactly at level $1$ ($M_{2j-1} = 1$).
-   * It ends strictly above level $1$ ($M_{2j-1} \ge 3$).
-   * It reaches level $1$ at or before time $2j - 1$ but ends strictly below level $1$ ($M_{2j-1} \le -1$).
-2. **Reflection Bijection**: For any path that reaches level $1$ at time $\tau_1 \le 2j - 1$ and ends below level $1$ at time $2j - 1$, reflecting the path after $\tau_1$ produces a unique path that ends strictly above level $1$ ($M_{2j-1} \ge 3$). This establishes a $1$-to-$1$ correspondence between paths that reach level $1$ and end below $1$, and paths that end above $1$.
-3. **Probability Accounting**:
-   $$\mathbb{P}\{\tau_1 \le 2j - 1\} = \mathbb{P}\{M_{2j-1} = 1\} + 2 \mathbb{P}\{M_{2j-1} \ge 3\}$$
-   By symmetry of the random walk, $\mathbb{P}\{M_{2j-1} \ge 3\} = \mathbb{P}\{M_{2j-1} \le -3\}$. Since the sum of all path probabilities is $1$:
-   $$1 = \mathbb{P}\{M_{2j-1} = 1\} + \mathbb{P}\{M_{2j-1} = -1\} + \mathbb{P}\{M_{2j-1} \ge 3\} + \mathbb{P}\{M_{2j-1} \le -3\}$$
-   Substituting yields the simplified identity:
-   $$\mathbb{P}\{\tau_1 \le 2j - 1\} = 1 - \mathbb{P}\{M_{2j-1} = -1\}$$
-4. **Path Count Evaluation**: To have $M_{2j-1} = -1$, a path of length $2j-1$ must have $j-1$ up-steps and $j$ down-steps. There are $\binom{2j-1}{j} = \frac{(2j-1)!}{j!(j-1)!}$ such paths, each having probability $(1/2)^{2j-1}$:
-   $$\mathbb{P}\{M_{2j-1} = -1\} = \frac{(2j-1)!}{j!(j-1)!} \left(\frac{1}{2}\right)^{2j-1}$$
-5. **Differencing for Exact Step Probability**: The probability of reaching level $1$ *for the first time* at step $2j - 1$ is:
-   $$\mathbb{P}\{\tau_1 = 2j - 1\} = \mathbb{P}\{\tau_1 \le 2j - 1\} - \mathbb{P}\{\tau_1 \le 2j - 3\} = \mathbb{P}\{M_{2j-3} = -1\} - \mathbb{P}\{M_{2j-1} = -1\}$$
-   Simplifying $\frac{(2j-3)!}{(j-1)!(j-2)!} (1/2)^{2j-3} - \frac{(2j-1)!}{j!(j-1)!} (1/2)^{2j-1}$ yields:
-   $$\mathbb{P}\{\tau_1 = 2j - 1\} = \frac{(2j - 2)!}{j!(j - 1)!} \left(\frac{1}{2}\right)^{2j-1} \quad \blacksquare$$
-6. **Worked Illustration (Figure 5.3.1, 3 tosses, $j=2$)** [p. 128]:
-   * Among 8 paths of length 3, 5 reach level 1 ($HHH, HHT, HTH, THH, HTT$).
-   * $HHH$ ends at $3 > 1$; $HHT, HTH, THH$ end at $1$; $HTT$ reaches $1$ at step $1$ and ends at $-1$.
-   * Reflecting $HTT$ after step $1$ yields $HHH$ (which ends at $3 > 1$), confirming the $1$-to-$1$ match.
+This section introduces no new numbered theorem — it gives a second,
+combinatorial proof of Theorem 5.2.5 (stated in the previous card) for the
+symmetric random walk.
 
----
+*Proof outline:*
 
-## 6. Exercises in This Section
+1. Fix $2j-1$ tosses. A path reaches level 1 by time $2j-1$ exactly when it
+   falls into one of three cases at the final time: it ends at 1
+   ($M_{2j-1}=1$), it ends strictly above 1 ($M_{2j-1}\ge3$), or it reaches
+   1 at some point but ends strictly below 1 ($M_{2j-1}\le-1$).
+2. Reflecting a path after its first passage time $\tau_1$ turns every path
+   that reaches 1 and ends below 1 into a unique path ending above 1, and
+   vice versa — a bijection between the two families.
+3. This gives $\mathbb{P}\{\tau_1\le2j-1\}=\mathbb{P}\{M_{2j-1}=1\}+2\mathbb{P}\{M_{2j-1}\ge3\}$;
+   using symmetry ($\mathbb{P}\{M_{2j-1}\ge3\}=\mathbb{P}\{M_{2j-1}\le-3\}$)
+   and that all four probabilities sum to 1, this simplifies to
+   $\mathbb{P}\{\tau_1\le2j-1\}=1-\mathbb{P}\{M_{2j-1}=-1\}$.
+4. Reaching $M_{2j-1}=-1$ requires exactly $j-1$ up-steps and $j$
+   down-steps out of $2j-1$ tosses, so
+   $\mathbb{P}\{M_{2j-1}=-1\}=\binom{2j-1}{j}(1/2)^{2j-1}$.
+5. Differencing, $\mathbb{P}\{\tau_1=2j-1\}=\mathbb{P}\{\tau_1\le2j-1\}-\mathbb{P}\{\tau_1\le2j-3\}=\mathbb{P}\{M_{2j-3}=-1\}-\mathbb{P}\{M_{2j-1}=-1\}$;
+   substituting the binomial counts for $2j-3$ and $2j-1$ tosses and
+   simplifying algebraically recovers (5.2.22).
+6. The book illustrates this with three tosses ($j=2$): among the 8 paths,
+   5 reach level 1 (HHH, HHT, HTH, HTT, THH). HTT reaches 1 at step 1 and
+   ends at $-1$; reflecting its remaining steps (T,T $\to$ H,H) gives
+   exactly HHH, the one path ending above 1 — confirming the bijection
+   (Figure 5.3.1).
 
-* **Exercise 5.4 (part (ii) ONLY)** [p. 140]:
-  *(Note: Part (i) of Exercise 5.4 was covered in Card 14).*
-  > **(ii)** Use the reflection principle to determine $\mathbb{P}\{\tau_2 = 2k\}, k = 1, 2, \dots$.
+## 6. Exercises in this section
 
-* **Exercise 5.5 (Complete)** [p. 140]:
-  > **Exercise 5.5 (Joint distribution of random walk and maximum-to-date).**
-  > Let $M_n$ be a symmetric random walk, and define its maximum-to-date process
-  > $$M_n^* = \max_{1 \le k \le n} M_k \quad \text{(5.7.2)}$$
-  > Let $n$ and $m$ be even positive integers, and let $b$ be an even integer less than or equal to $m$. Assume $m \le n$ and $2m - b \le n$.
-  > **(i)** Use an argument based on reflected paths to show that
-  > $$\mathbb{P}\{M_n^* \ge m, M_n = b\} = \mathbb{P}\{M_n = 2m - b\} = \frac{n!}{\left(\frac{n-b}{2} + m\right)! \left(\frac{n+b}{2} - m\right)!} \left(\frac{1}{2}\right)^n$$
-  > **(ii)** If the random walk is asymmetric with probability $p$ for an up step and probability $q = 1 - p$ for a down step, where $0 < p < 1$, what is $\mathbb{P}\{M_n^* \ge m, M_n = b\}$?
+* **Exercise 5.4(ii):** Using the power series from the previous card,
+  $\mathbb{E}\alpha^{\tau_2}=\sum_{k=1}^\infty\left(\frac{\alpha}{2}\right)^{2k}\frac{(2k)!}{(k+1)!k!}$,
+  use the reflection principle to determine $\mathbb{P}\{\tau_2=2k\}$,
+  $k=1,2,\dots$.
+* **Exercise 5.5 (Joint distribution of random walk and maximum-to-date):**
+  Let $M_n$ be a symmetric random walk and $M_n^*=\max_{1\le k\le n}M_k$
+  (Eq. 5.7.2). Let $n$ and $m$ be even positive integers and $b$ an even
+  integer with $b\le m$; assume $m\le n$ and $2m-b\le n$.
+  (i) Use an argument based on reflected paths to show that
+  $\mathbb{P}\{M_n^*\ge m, M_n=b\}=\mathbb{P}\{M_n=2m-b\}=\frac{n!}{\left(\frac{n-b}{2}+m\right)!\left(\frac{n+b}{2}-m\right)!}\left(\frac12\right)^n$.
+  (ii) If the random walk is instead asymmetric, with probability $p$ for
+  an up step and $q=1-p$ for a down step, $0<p<1$, what is
+  $\mathbb{P}\{M_n^*\ge m, M_n=b\}$?
 
----
+## 7. Cross-references
 
-## 7. Cross-References
-
-* **Section 5.2 & Card 14**: Provides the moment-generating function proof of Theorem 5.2.5 (formula (5.2.22)), which Section 5.3 re-derives combinatorially.
-* **Volume II, Chapter 7**: The reflection principle established here for discrete random walk paths is extended to Brownian motion to derive closed-form pricing formulas for continuous-time barrier and lookback exotic options.
+* **Section 5.2 (previous card):** gives the moment-generating-function
+  proof of Theorem 5.2.5 (Eq. 5.2.22), which this section re-derives
+  combinatorially.
+* **Brownian motion (Volume II):** the book states explicitly that this
+  same reflection idea will be reused in the study of Brownian motion,
+  without citing a specific chapter at this point.
