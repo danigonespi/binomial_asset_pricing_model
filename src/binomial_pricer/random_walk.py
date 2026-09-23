@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from .probability_space import CoinTossSpace
 
 def symmetric_random_walk_path(coin_sequence: str) -> np.ndarray:
     """
@@ -85,3 +86,77 @@ def first_passage_time_distribution(j: int, p: float = 0.5) -> float:
     combinatorial_factor = math.factorial(2 * j - 2) / (math.factorial(j) * math.factorial(j - 1))
     
     return combinatorial_factor * (p ** j) * (q ** (j - 1))
+
+def first_passage_time_distribution_via_reflection(j: int) -> float:
+    """
+    Calculates P{tau_1 = 2j - 1} for the symmetric random walk using the 
+    purely combinatorial path reflection argument.
+    
+    Uses the unnumbered path-partition identity P{tau_1 <= 2j-1} = 1 - P{M_{2j-1} = -1}
+    and differences it with the step prior to obtain the exact point probability (p. 128).
+    """
+    if j < 1:
+        raise ValueError("Domain violation: j must be a positive integer (j >= 1).")
+        
+    def prob_tau_le(k: int) -> float:
+        if k < 1:
+            return 0.0
+        # Evaluates P{tau_1 <= 2k-1} = 1 - P{M_{2k-1} = -1}
+        # P{M_{2k-1} = -1} requires k-1 up-steps and k down-steps out of 2k-1 tosses.
+        comb = math.factorial(2 * k - 1) / (math.factorial(k) * math.factorial(k - 1))
+        return 1.0 - comb * (0.5 ** (2 * k - 1))
+        
+    return prob_tau_le(j) - prob_tau_le(j - 1)
+
+def joint_distribution_walk_and_maximum(n: int, m: int, b: int) -> float:
+    """
+    Calculates P{M_n^* >= m, M_n = b} for a symmetric random walk.
+    
+    Uses the exact closed formula from Exercise 5.5(i), derived via 
+    path reflection (p. 140).
+    """
+    if n <= 0 or n % 2 != 0:
+        raise ValueError(f"Domain violation: n must be a positive even integer. Got {n}")
+    if m <= 0 or m % 2 != 0:
+        raise ValueError(f"Domain violation: m must be a positive even integer. Got {m}")
+    if b % 2 != 0:
+        raise ValueError(f"Domain violation: b must be an even integer. Got {b}")
+    if b > m:
+        raise ValueError(f"Domain violation: b ({b}) cannot be greater than m ({m}).")
+    if m > n:
+        raise ValueError(f"Domain violation: m ({m}) cannot exceed n ({n}).")
+    if 2 * m - b > n:
+        raise ValueError(f"Domain violation: 2m-b ({2 * m - b}) cannot exceed n ({n}).")
+        
+    n_minus = (n - b) // 2 + m
+    n_plus = (n + b) // 2 - m
+    
+    combinatorial_factor = math.factorial(n) / (math.factorial(n_minus) * math.factorial(n_plus))
+    return combinatorial_factor * (0.5 ** n)
+
+def joint_distribution_walk_and_maximum_brute_force(n: int, m: int, b: int, p: float = 0.5) -> float:
+    """
+    Calculates P{M_n^* >= m, M_n = b} by explicitly enumerating all paths.
+    Valid for any generic valid parameters n, m, b, and an arbitrary up-step 
+    probability p.
+    
+    This addresses Exercise 5.5(ii) computationally without fabricating 
+    a closed-form formula. Uses Eq. (5.7.2) definition of M_n^*.
+    """
+    if n <= 0:
+        raise ValueError("n must be a positive integer.")
+    if not (0.0 < p < 1.0):
+        raise ValueError("Probability p must be in (0, 1).")
+        
+    space = CoinTossSpace(n_periods=n, p=p)
+    prob_sum = 0.0
+    
+    for w in space.get_omega():
+        path = symmetric_random_walk_path(w)
+        m_n = path[-1]
+        m_n_star = max(path[1:])
+        
+        if math.isclose(m_n, b, rel_tol=1e-9, abs_tol=1e-9) and m_n_star >= m - 1e-9:
+            prob_sum += space.probability(w)
+            
+    return prob_sum

@@ -10,7 +10,7 @@ from binomial_pricer.stochastic_properties import is_martingale, is_markov, is_s
 from binomial_pricer.state_prices import radon_nikodym_derivative, state_price_density, price_via_state_prices, radon_nikodym_process, state_price_density_process, price_step_via_state_density_process
 from binomial_pricer.optimal_investment import LogUtility, PowerUtility, solve_optimal_investment, solve_goal_probability_maximization
 from binomial_pricer.american_engine import AmericanEngine
-from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, first_passage_time_mgf, first_passage_time_distribution
+from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, first_passage_time_mgf, first_passage_time_distribution, first_passage_time_distribution_via_reflection
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -1008,3 +1008,56 @@ def test_exercise_5_1_multiplicative_property_mgf_for_american_put():
     
     assert math.isclose(val_m2, val_m1_squared, abs_tol=1e-9)
     assert val_m2 == pytest.approx(1.0 / 4.0)
+
+def test_exercise_5_4_ii_tau_2_distribution_via_reflection():
+    """
+    Exercise 5.4(ii): Determine P{tau_2 = 2k} using the reflection principle.
+    By Ex 5.1, tau_2 has the same distribution as the sum of two independent tau_1.
+    So P{tau_2 = 2k} = sum_{j=1}^k P{tau_1 = 2j-1} * P{tau_1 = 2(k - j + 1) - 1}.
+    We compare this convolution to the exact power series coefficients from Ex 5.4(i).
+    """
+    for k in [1, 2, 3, 4]:
+        # Route 1: Convolution of tau_1 computed strictly via path reflection formulas
+        prob_conv = 0.0
+        for j in range(1, k + 1):
+            p1 = first_passage_time_distribution_via_reflection(j)
+            p2 = first_passage_time_distribution_via_reflection(k - j + 1)
+            prob_conv += p1 * p2
+            
+        # Route 2: Power series coefficient expansion evaluated natively
+        # P{tau_2 = 2k} = (1/2)^{2k} * (2k)! / ((k+1)! k!)
+        prob_series = (0.5 ** (2 * k)) * math.factorial(2 * k) / (math.factorial(k + 1) * math.factorial(k))
+        
+        assert math.isclose(prob_conv, prob_series, abs_tol=1e-9)
+
+def test_figure_5_3_1_path_reflection_bijection():
+    """
+    Figure 5.3.1 / p. 128: Combinatorial path-counting for j=2 (3 tosses).
+    Out of 8 paths total, exactly 5 reach level 1.
+    The path HTT reaches 1 at step 1 and ends at -1. Its reflected path 
+    from that point onward is HHH, which ends at 3.
+    """
+    space = CoinTossSpace(n_periods=3, p=0.5)
+    paths_reaching_1 = []
+    
+    for w in space.get_omega():
+        path = symmetric_random_walk_path(w)
+        tau = first_passage_time(path, 1)
+        if tau <= 3:
+            paths_reaching_1.append((w, tau))
+            
+    assert len(paths_reaching_1) == 5
+    
+    w_target = "HTT"
+    tau_target = first_passage_time(symmetric_random_walk_path(w_target), 1)
+    
+    assert tau_target == 1
+    
+    reflected_w = w_target[:tau_target]
+    for coin in w_target[tau_target:]:
+        reflected_w += 'H' if coin == 'T' else 'T'
+        
+    assert reflected_w == "HHH"
+    
+    path_reflected = symmetric_random_walk_path(reflected_w)
+    assert path_reflected[-1] == 3.0
