@@ -11,6 +11,7 @@ from binomial_pricer.state_prices import radon_nikodym_derivative, state_price_d
 from binomial_pricer.optimal_investment import LogUtility, PowerUtility, solve_optimal_investment, solve_goal_probability_maximization
 from binomial_pricer.american_engine import AmericanEngine
 from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, first_passage_time_mgf, first_passage_time_distribution, first_passage_time_distribution_via_reflection
+from binomial_pricer.perpetual_american import perpetual_put_value, perpetual_call_value, exercise_policy_value
 
 def test_example_1_1_1(base_model):
     """Example 1.1.1: call strike=5 -> V0=1.20, Delta0=0.5."""
@@ -1061,3 +1062,56 @@ def test_figure_5_3_1_path_reflection_bijection():
     
     path_reflected = symmetric_random_walk_path(reflected_w)
     assert path_reflected[-1] == 3.0
+
+def test_figure_5_4_1_perpetual_put_values():
+    """
+    Figure 5.4.1 (Eqs. 5.4.4 - 5.4.6): Evaluates the perpetual put 
+    at the exact discrete nodes provided by the book for K=4.
+    """
+    assert perpetual_put_value(8.0, 4.0) == pytest.approx(0.5)
+    assert perpetual_put_value(4.0, 4.0) == pytest.approx(1.0)
+    assert perpetual_put_value(2.0, 4.0) == pytest.approx(2.0)
+    assert perpetual_put_value(1.0, 4.0) == pytest.approx(3.0)
+    assert perpetual_put_value(0.5, 4.0) == pytest.approx(3.5)
+
+def test_page_130_exercise_policy_values():
+    """
+    Page 130: Exact expected discounted payoffs for deterministic
+    level-hitting policies tau_{-m} with K=4.
+    """
+    assert exercise_policy_value(m=1, K=4.0) == pytest.approx(1.0)
+    assert exercise_policy_value(m=2, K=4.0) == pytest.approx(0.75)
+    assert exercise_policy_value(m=3, K=4.0) == pytest.approx(7.0 / 16.0)
+
+def test_exercise_5_6_finite_put_approaching_perpetual():
+    """
+    Exercise 5.6: Double route verification. The finite expiration American put
+    computed algorithmically by AmericanEngine must perfectly match the specific 
+    printed numerical constants 0.80, 0.928, and 0.96896 for N=1, 3, 5.
+    """
+    model = BinomialStockModel(s0=4.0, u=2.0, d=0.5, r=0.25)
+    payoff = EuropeanPut(strike=4.0)
+    engine = AmericanEngine()
+    
+    assert engine.price(model, payoff, n_periods=1).v0 == pytest.approx(0.80, abs=1e-5)
+    assert engine.price(model, payoff, n_periods=3).v0 == pytest.approx(0.928, abs=1e-5)
+    assert engine.price(model, payoff, n_periods=5).v0 == pytest.approx(0.96896, abs=1e-5)
+
+def test_exercise_5_8_ii_perpetual_call_limit():
+    """
+    Exercise 5.8(ii): Shows that exercising the perpetual call at any fixed time n 
+    gives an expected discounted payoff of S_0 - K/(1+r)^n, which strictly approaches 
+    S_0 (the perpetual value) as n -> infinity.
+    """
+    s0 = 4.0
+    k = 4.0
+    r = 0.25
+    
+    exact_perpetual = perpetual_call_value(s0)
+    
+    val_10 = s0 - k / ((1.0 + r) ** 10)
+    val_50 = s0 - k / ((1.0 + r) ** 50)
+    val_200 = s0 - k / ((1.0 + r) ** 200)
+    
+    assert val_10 < val_50 < val_200
+    assert val_200 == pytest.approx(exact_perpetual, abs=1e-15)
