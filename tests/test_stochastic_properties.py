@@ -24,7 +24,6 @@ def test_deterministic_process_is_trivially_markov():
     ]
     assert is_markov(space, process)
 
-
 def test_submartingale_and_supermartingale_validation():
     space = CoinTossSpace(n_periods=2, p=0.5)
     

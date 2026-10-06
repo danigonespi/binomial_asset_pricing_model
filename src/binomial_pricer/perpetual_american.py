@@ -3,14 +3,15 @@ from .random_walk import first_passage_time_mgf
 
 def exercise_policy_value(m: int, K: float = 4.0) -> float:
     """
-    Calculates the value of the exercise policy tau_{-m} for a perpetual put.
-    The policy exercises the first time the random walk falls m steps, which 
-    corresponds to the stock price falling to S_0 * 2^{-m} (assuming S_0 = 4 
-    as in the book's baseline setup for the passage time).
+    Calculates the value of the exercise policy tau_{-m} for a perpetual put
+    struck at K, assuming the walk starts at S_0 = K (so the exercise level
+    under tau_{-m} is K * 2^{-m}). This matches the book's own baseline
+    example, where S_0 = K = 4, and generalizes consistently with
+    perpetual_put_boundary's convention of anchoring the lattice at K.
     
     Uses Eq. (5.4.2) and Eq. (5.4.3).
     """
-    s_tau = 4.0 * (0.5 ** m)
+    s_tau = K * (0.5 ** m)
     payoff = K - s_tau
     
     if payoff <= 0.0:

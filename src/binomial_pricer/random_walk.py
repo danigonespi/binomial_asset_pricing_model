@@ -101,8 +101,6 @@ def first_passage_time_distribution_via_reflection(j: int) -> float:
     def prob_tau_le(k: int) -> float:
         if k < 1:
             return 0.0
-        # Evaluates P{tau_1 <= 2k-1} = 1 - P{M_{2k-1} = -1}
-        # P{M_{2k-1} = -1} requires k-1 up-steps and k down-steps out of 2k-1 tosses.
         comb = math.factorial(2 * k - 1) / (math.factorial(k) * math.factorial(k - 1))
         return 1.0 - comb * (0.5 ** (2 * k - 1))
         
@@ -134,14 +132,32 @@ def joint_distribution_walk_and_maximum(n: int, m: int, b: int) -> float:
     combinatorial_factor = math.factorial(n) / (math.factorial(n_minus) * math.factorial(n_plus))
     return combinatorial_factor * (0.5 ** n)
 
+def joint_distribution_walk_and_maximum_asymmetric(n: int, m: int, b: int, p: float) -> float:
+    """
+    Calculates P{M_n^* >= m, M_n = b} for a random walk with up-step probability p
+    (and down-step probability q = 1 - p). This answers Exercise 5.5(ii), which the
+    book poses as a question without stating the result.
+
+    Derivation: every path ending at b has exactly (n+b)/2 up-steps and (n-b)/2
+    down-steps, so each such path has probability p^{(n+b)/2} q^{(n-b)/2}, whatever
+    its shape. The number of paths in the event does not depend on p: it is 2^n times
+    the symmetric probability of Exercise 5.5(i). Note the exponents are those of the
+    endpoint b, not of the reflected endpoint 2m - b.
+
+    Same domain restrictions as joint_distribution_walk_and_maximum (Exercise 5.5(i)).
+    """
+    if not (0.0 < p < 1.0):
+        raise ValueError(f"Domain violation: p must be in (0, 1). Got {p}")
+
+    q = 1.0 - p
+    n_paths = (2 ** n) * joint_distribution_walk_and_maximum(n, m, b)
+    return n_paths * (p ** ((n + b) // 2)) * (q ** ((n - b) // 2))
+
 def joint_distribution_walk_and_maximum_brute_force(n: int, m: int, b: int, p: float = 0.5) -> float:
     """
-    Calculates P{M_n^* >= m, M_n = b} by explicitly enumerating all paths.
-    Valid for any generic valid parameters n, m, b, and an arbitrary up-step 
-    probability p.
-    
-    This addresses Exercise 5.5(ii) computationally without fabricating 
-    a closed-form formula. Uses Eq. (5.7.2) definition of M_n^*.
+    Independent reference implementation for Exercise 5.5(ii): it does not use the
+    closed form of joint_distribution_walk_and_maximum_asymmetric, and it works for
+    any n, m, b (no parity restrictions). Uses Eq. (5.7.2) definition of M_n^*.
     """
     if n <= 0:
         raise ValueError("n must be a positive integer.")

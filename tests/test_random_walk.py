@@ -1,7 +1,7 @@
 import pytest
 import math
 from itertools import product
-from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, exponential_martingale_path, first_passage_time_mgf, first_passage_time_distribution, first_passage_time_distribution_via_reflection, joint_distribution_walk_and_maximum, joint_distribution_walk_and_maximum_brute_force
+from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, exponential_martingale_path, first_passage_time_mgf, first_passage_time_distribution, first_passage_time_distribution_via_reflection, joint_distribution_walk_and_maximum, joint_distribution_walk_and_maximum_asymmetric, joint_distribution_walk_and_maximum_brute_force, joint_distribution_walk_and_maximum_brute_force
 from binomial_pricer.probability_space import CoinTossSpace
 from binomial_pricer.stochastic_properties import is_martingale
 
@@ -50,7 +50,7 @@ def test_first_passage_time_mgf_empirical_bounds():
     exact_value = first_passage_time_mgf(alpha, m)
     
     assert empirical_expected_value < exact_value
-    assert exact_value - empirical_expected_value < 0.1  # Bounded truncation error
+    assert exact_value - empirical_expected_value < 0.1 
 
 def test_symmetric_random_walk_is_martingale():
     """
@@ -124,8 +124,8 @@ def test_joint_distribution_asymmetric_monotonicity():
     non-increasing with respect to m. Requiring a higher maximum 
     is a stricter subset of paths ending at the exact same b.
     
-    This computationally answers Exercise 5.5(ii) properties without forcing 
-    a closed-form algebraic expression.
+    Structural property of the brute-force reference (nested events). The closed form
+    is tested in test_joint_distribution_asymmetric_matches_brute_force.
     """
     n, b = 6, 0
     p = 0.7
@@ -136,3 +136,31 @@ def test_joint_distribution_asymmetric_monotonicity():
         probs.append(p_val)
         
     assert probs[0] >= probs[1] >= probs[2]
+
+VALID_JOINT_CASES = [(4, 2, 0), (4, 2, 2), (6, 2, -2), (6, 4, 2), (8, 2, 0), (8, 4, 0), (8, 6, 4)]
+
+@pytest.mark.parametrize("p", [0.2, 0.5, 0.65, 0.9])
+def test_joint_distribution_asymmetric_matches_brute_force(p):
+    for n, m, b in VALID_JOINT_CASES:
+        exact = joint_distribution_walk_and_maximum_asymmetric(n, m, b, p)
+        brute = joint_distribution_walk_and_maximum_brute_force(n, m, b, p=p)
+        assert math.isclose(exact, brute, rel_tol=1e-9)
+
+def test_joint_distribution_asymmetric_reduces_to_symmetric_formula_at_p_half():
+    for n, m, b in VALID_JOINT_CASES:
+        assert math.isclose(joint_distribution_walk_and_maximum_asymmetric(n, m, b, 0.5),
+                            joint_distribution_walk_and_maximum(n, m, b), rel_tol=1e-12)
+
+def test_joint_distribution_asymmetric_is_invariant_under_p_swap_when_b_is_zero():
+    for n, m, b in [(4, 2, 0), (8, 2, 0), (8, 4, 0)]:
+        for p in (0.2, 0.35, 0.8):
+            assert math.isclose(joint_distribution_walk_and_maximum_asymmetric(n, m, b, p),
+                                joint_distribution_walk_and_maximum_asymmetric(n, m, b, 1.0 - p), rel_tol=1e-12)
+
+def test_joint_distribution_asymmetric_rejects_invalid_arguments():
+    with pytest.raises(ValueError):
+        joint_distribution_walk_and_maximum_asymmetric(4, 2, 0, 0.0)
+    with pytest.raises(ValueError):
+        joint_distribution_walk_and_maximum_asymmetric(4, 2, 0, 1.0)
+    with pytest.raises(ValueError):
+        joint_distribution_walk_and_maximum_asymmetric(5, 2, 0, 0.5)

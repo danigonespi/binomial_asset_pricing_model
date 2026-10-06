@@ -10,7 +10,7 @@ from binomial_pricer.stochastic_properties import is_martingale, is_markov, is_s
 from binomial_pricer.state_prices import radon_nikodym_derivative, state_price_density, price_via_state_prices, radon_nikodym_process, state_price_density_process, price_step_via_state_density_process
 from binomial_pricer.optimal_investment import LogUtility, PowerUtility, solve_optimal_investment, solve_goal_probability_maximization
 from binomial_pricer.american_engine import AmericanEngine
-from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, first_passage_time_mgf, first_passage_time_distribution, first_passage_time_distribution_via_reflection
+from binomial_pricer.random_walk import symmetric_random_walk_path, first_passage_time, first_passage_time_mgf, first_passage_time_distribution, first_passage_time_distribution_via_reflection, joint_distribution_walk_and_maximum_asymmetric, joint_distribution_walk_and_maximum_brute_force
 from binomial_pricer.perpetual_american import perpetual_put_value, perpetual_call_value, exercise_policy_value
 
 def test_example_1_1_1(base_model):
@@ -1115,3 +1115,17 @@ def test_exercise_5_8_ii_perpetual_call_limit():
     
     assert val_10 < val_50 < val_200
     assert val_200 == pytest.approx(exact_perpetual, abs=1e-15)
+
+def test_exercise_5_5_ii_asymmetric_joint_distribution():
+    """
+    Exercise 5.5(ii): joint law of the walk and its running maximum for an asymmetric walk.
+    The book poses the question without an answer; the closed form follows from part (i).
+    Two routes: a by-hand count (8!/(5!3!) = 56 paths, each with 5 up-steps and 3 down-steps)
+    and brute-force enumeration of all 2^8 paths.
+    """
+    n, m, b, p = 8, 2, 2, 0.7
+    by_hand = 56 * p ** 5 * (1 - p) ** 3
+
+    assert joint_distribution_walk_and_maximum_asymmetric(n, m, b, p) == pytest.approx(by_hand)
+    assert joint_distribution_walk_and_maximum_brute_force(n, m, b, p=p) == pytest.approx(by_hand)
+    assert by_hand == pytest.approx(0.25412184)
