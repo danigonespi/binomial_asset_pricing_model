@@ -1,4 +1,4 @@
-﻿.ipynb_checkpoints/
+.ipynb_checkpoints/
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -6,3 +6,4 @@ __pycache__/
 anaconda_projects/
 docs/references/
 /CLAUDE.md
+.vscode/
